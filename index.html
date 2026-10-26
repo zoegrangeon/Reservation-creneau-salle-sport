@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réservation Salle de Sport - Performance Hub</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              lime: '#a3e635',
+              dark: '#0f172a',
+              card: '#1e293b',
+              border: '#334155'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased pb-16">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-lime-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-lime-400/20">
+          ⚡
+        </div>
+        <div>
+          <h1 class="text-lg font-black tracking-wide text-white">PULSE ATHLETIC CLUB</h1>
+          <p class="text-xs text-slate-400">Réservation & Régulation des Espaces</p>
+        </div>
+      </div>
+      <button id="toggleAdminBtn" class="text-xs border border-slate-700 bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-300 transition">
+        <i data-lucide="shield-check" class="w-4 h-4"></i> Vue Superviseur
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Modal Admin / Superviseur -->
+    <div id="adminPanel" class="hidden mb-8 p-5 bg-slate-900 border border-slate-700 rounded-2xl shadow-xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h2 class="font-bold flex items-center gap-2 text-white">
+          <i data-lucide="sliders" class="w-5 h-5 text-lime-400"></i> Supervision des réservations (Affluence)
+        </h2>
+        <button id="resetDataBtn" class="text-xs text-rose-400 hover:text-rose-300 underline">Réinitialiser les créneaux</button>
+      </div>
+      <div class="mt-4 overflow-x-auto max-h-64">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-800 text-slate-400 uppercase text-[10px]">
+            <tr>
+              <th class="p-2">Réf</th>
+              <th class="p-2">Athlète</th>
+              <th class="p-2">Espace</th>
+              <th class="p-2">Créneau</th>
+              <th class="p-2">Statut</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody" class="divide-y divide-slate-800">
+            <!-- Dynamique -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section Réservation -->
+    <section id="bookingSection" class="space-y-8">
+      
+      <!-- Étape 1 : Choix de la zone -->
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-6 h-6 rounded-full bg-lime-400 text-slate-950 flex items-center justify-center font-bold text-xs">1</span>
+          <h2 class="text-base font-bold uppercase tracking-wider text-slate-200">Choisis ton espace de travail</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="zonesContainer">
+          <!-- Card Cardio -->
+          <div data-zone="cardio" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-2xl">🏃</span>
+                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+              </div>
+              <h3 class="font-bold text-white text-base">Espace Cardio</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed">Tapis de course, vélo, escalier, step, rameur concept 2.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
+              <span>Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            </div>
+          </div>
+
+          <!-- Card Hyrox -->
+          <div data-zone="hyrox" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-2xl">⚡</span>
+                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+              </div>
+              <h3 class="font-bold text-white text-base">Espace Hyrox</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed">SkiErg, sled push/pull, sandbags, wall balls, burpees box.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
+              <span>Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            </div>
+          </div>
+
+          <!-- Card Bas du Corps -->
+          <div data-zone="lower" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-2xl">🦵</span>
+                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+              </div>
+              <h3 class="font-bold text-white text-base">Machines Bas du Corps</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed">Presse à cuisses, leg curl/ext, hack squat, hip thrust guidé.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
+              <span>Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            </div>
+          </div>
+
+          <!-- Card Haut du Corps -->
+          <div data-zone="upper" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-2xl">💪</span>
+                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+              </div>
+              <h3 class="font-bold text-white text-base">Machines Haut du Corps</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed">Poulies vis-à-vis, développé guidé, tirage vertical, dips/tractions.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
+              <span>Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 2 : Date & Créneau (6h - 23h toutes les 30m) -->
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-6 h-6 rounded-full bg-lime-400 text-slate-950 flex items-center justify-center font-bold text-xs">2</span>
+          <h2 class="text-base font-bold uppercase tracking-wider text-slate-200">Sélectionne ton créneau (6h00 à 23h00)</h2>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <label for="bookingDate" class="text-xs font-semibold text-slate-400">Date d'entraînement :</label>
+              <input type="date" id="bookingDate" class="bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-lime-400 outline-none">
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 font-semibold">Durée :</span>
+              <button type="button" data-duration="60" class="duration-btn bg-slate-800 text-slate-300 px-3 py-1 rounded-lg text-xs font-semibold border border-slate-700 active-duration">1h00</button>
+              <button type="button" data-duration="90" class="duration-btn bg-slate-800 text-slate-400 px-3 py-1 rounded-lg text-xs font-semibold border border-transparent">1h30</button>
+            </div>
+          </div>
+
+          <!-- Grille des créneaux -->
+          <div class="pt-2">
+            <div id="slotsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 max-h-72 overflow-y-auto pr-1">
+              <!-- Rempli en JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 3 : Coordonnées Athlète -->
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-6 h-6 rounded-full bg-lime-400 text-slate-950 flex items-center justify-center font-bold text-xs">3</span>
+          <h2 class="text-base font-bold uppercase tracking-wider text-slate-200">Informations de l'athlète</h2>
+        </div>
+
+        <form id="athleteForm" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Prénom</label>
+              <input type="text" id="athleteFirstName" required placeholder="Alex" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Nom</label>
+              <input type="text" id="athleteLastName" required placeholder="Dupont" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Adresse e-mail</label>
+              <input type="email" id="athleteEmail" required placeholder="alex.dupont@email.fr" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Numéro d'adhérent / Téléphone</label>
+              <input type="tel" id="athletePhone" required placeholder="06 12 34 56 78" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+            <div id="bookingSummaryPreview" class="text-xs text-slate-400">
+              Sélectionne un espace et un créneau pour valider.
+            </div>
+            <button type="submit" id="submitBtn" disabled class="bg-lime-400 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed hover:bg-lime-300 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-lime-400/10">
+              Confirmer la réservation
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- Écran de Confirmation / Pass d'accès QR -->
+    <section id="confirmationSection" class="hidden max-w-md mx-auto my-12 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-center space-y-6">
+      <div class="w-14 h-14 bg-lime-400/10 border border-lime-400/30 text-lime-400 rounded-2xl mx-auto flex items-center justify-center">
+        <i data-lucide="check" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-black text-white">Réservation Confirmée !</h2>
+        <p class="text-xs text-slate-400 mt-1">Présente ce pass à la borne de contrôle d'accès.</p>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mx-auto">
+        <div id="qrcode" class="flex justify-center"></div>
+      </div>
+
+      <div class="bg-slate-950 border border-slate-800/80 rounded-2xl p-4 text-left space-y-2 text-xs">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Athlète :</span>
+          <span id="ticketAthlete" class="font-bold text-white">Alex Dupont</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Espace :</span>
+          <span id="ticketZone" class="font-bold text-lime-400">Espace Hyrox</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Date & Heure :</span>
+          <span id="ticketSlot" class="font-bold text-white">2026-10-26 | 08h00 - 09h30</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Réf :</span>
+          <span id="ticketRef" class="font-mono text-slate-300">#PULSE-8942</span>
+        </div>
+      </div>
+
+      <button id="newBookingBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">
+        Effectuer une autre réservation
+      </button>
+    </section>
+
+  </main>
+
+  <script>
+    // Initialisation
+    const CAPACITY_LIMIT = 20;
+    const ZONES = {
+      cardio: 'Espace Cardio',
+      hyrox: 'Espace Hyrox',
+      lower: 'Machines Bas du Corps',
+      upper: 'Machines Haut du Corps'
+    };
+
+    let selectedZone = null;
+    let selectedSlot = null;
+    let selectedDuration = 60; // en minutes
+
+    // Données stockées localement
+    let reservations = JSON.parse(localStorage.getItem('gym_reservations')) || [];
+
+    // Configuration de la date du jour par défaut
+    const dateInput = document.getElementById('bookingDate');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+    dateInput.min = today;
+
+    // Génération des créneaux 6h00 à 23h00 toutes les 30m
+    function generateSlotTimes() {
+      const times = [];
+      for (let h = 6; h <= 22; h++) {
+        for (let m = 0; m < 60; m += 30) {
+          if (h === 22 && m > 30 && selectedDuration === 60) continue;
+          if (h === 22 && m > 0 && selectedDuration === 90) continue;
+          const startH = String(h).padStart(2, '0');
+          const startM = String(m).padStart(2, '0');
+          times.push(`${startH}:${startM}`);
+        }
+      }
+      return times;
+    }
+
+    function calculateEndTime(startTime, durationMinutes) {
+      const [h, m] = startTime.split(':').map(Number);
+      const totalMin = h * 60 + m + durationMinutes;
+      const endH = String(Math.floor(totalMin / 60)).padStart(2, '0');
+      const endM = String(totalMin % 60).padStart(2, '0');
+      return `${endH}:${endM}`;
+    }
+
+    // Calcul des places restantes
+    function getRemainingSeats(zone, date, startTime) {
+      if (!zone) return CAPACITY_LIMIT;
+      const booked = reservations.filter(r => r.zone === zone && r.date === date && r.startTime === startTime).length;
+      return Math.max(0, CAPACITY_LIMIT - booked);
+    }
+
+    // Affichage des cartes de créneaux
+    function renderSlots() {
+      const slotsGrid = document.getElementById('slotsGrid');
+      slotsGrid.innerHTML = '';
+      const times = generateSlotTimes();
+      const date = dateInput.value;
+
+      times.forEach(time => {
+        const endTime = calculateEndTime(time, selectedDuration);
+        const remaining = getRemainingSeats(selectedZone, date, time);
+        const isFull = remaining <= 0;
+        const isSelected = selectedSlot === time;
+
+        const slotCard = document.createElement('div');
+        slotCard.className = `p-2.5 rounded-xl border text-center transition cursor-pointer text-xs flex flex-col justify-between ${
+          isFull
+            ? 'bg-slate-950/40 border-slate-900 text-slate-600 cursor-not-allowed opacity-60'
+            : isSelected
+              ? 'bg-lime-400 text-slate-950 border-lime-400 font-bold shadow-md shadow-lime-400/20'
+              : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-600'
+        }`;
+
+        slotCard.innerHTML = `
+          <div class="font-semibold">${time} - ${endTime}</div>
+          <div class="text-[10px] mt-1 ${isSelected ? 'text-slate-900 font-bold' : isFull ? 'text-rose-500' : remaining <= 5 ? 'text-amber-400' : 'text-slate-500'}">
+            ${isFull ? 'Complet' : `${remaining} places`}
+          </div>
+        `;
+
+        if (!isFull) {
+          slotCard.addEventListener('click', () => {
+            selectedSlot = time;
+            renderSlots();
+            updateSummary();
+          });
+        }
+
+        slotsGrid.appendChild(slotCard);
+      });
+    }
+
+    // Gestion du choix de zone
+    document.querySelectorAll('.zone-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.zone-card').forEach(c => {
+          c.classList.remove('selected', 'border-lime-400', 'bg-lime-950/20');
+          c.classList.add('border-slate-800', 'bg-slate-900');
+        });
+        card.classList.add('selected', 'border-lime-400', 'bg-lime-950/20');
+        card.classList.remove('border-slate-800', 'bg-slate-900');
+        
+        selectedZone = card.dataset.zone;
+        renderSlots();
+        updateSummary();
+      });
+    });
+
+    // Durée 1h ou 1h30
+    document.querySelectorAll('.duration-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.duration-btn').forEach(b => {
+          b.classList.remove('bg-lime-400', 'text-slate-950');
+          b.classList.add('bg-slate-800', 'text-slate-400');
+        });
+        e.target.classList.add('bg-lime-400', 'text-slate-950');
+        e.target.classList.remove('bg-slate-800', 'text-slate-400');
+        selectedDuration = parseInt(e.target.dataset.duration);
+        renderSlots();
+        updateSummary();
+      });
+    });
+
+    dateInput.addEventListener('change', () => {
+      renderSlots();
+      updateSummary();
+    });
+
+    function updateSummary() {
+      const summary = document.getElementById('bookingSummaryPreview');
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (selectedZone && selectedSlot) {
+        const endTime = calculateEndTime(selectedSlot, selectedDuration);
+        summary.innerHTML = `<span class="text-white font-semibold">${ZONES[selectedZone]}</span> le <span class="text-white">${dateInput.value}</span> de <span class="text-lime-400 font-bold">${selectedSlot} à ${endTime}</span>.`;
+        submitBtn.removeAttribute('disabled');
+      } else {
+        summary.textContent = 'Sélectionne un espace et un créneau pour valider.';
+        submitBtn.setAttribute('disabled', 'true');
+      }
+    }
+
+    // Soumission du formulaire
+    document.getElementById('athleteForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!selectedZone || !selectedSlot) return;
+
+      const refNumber = 'PULSE-' + Math.floor(1000 + Math.random() * 9000);
+      const newBooking = {
+        ref: refNumber,
+        firstName: document.getElementById('athleteFirstName').value,
+        lastName: document.getElementById('athleteLastName').value,
+        email: document.getElementById('athleteEmail').value,
+        phone: document.getElementById('athletePhone').value,
+        zone: selectedZone,
+        zoneName: ZONES[selectedZone],
+        date: dateInput.value,
+        startTime: selectedSlot,
+        endTime: calculateEndTime(selectedSlot, selectedDuration)
+      };
+
+      reservations.push(newBooking);
+      localStorage.setItem('gym_reservations', JSON.stringify(reservations));
+
+      // Affichage du Pass
+      document.getElementById('bookingSection').classList.add('hidden');
+      const confSection = document.getElementById('confirmationSection');
+      confSection.classList.remove('hidden');
+
+      document.getElementById('ticketAthlete').textContent = `${newBooking.firstName} ${newBooking.lastName}`;
+      document.getElementById('ticketZone').textContent = newBooking.zoneName;
+      document.getElementById('ticketSlot').textContent = `${newBooking.date} | ${newBooking.startTime} - ${newBooking.endTime}`;
+      document.getElementById('ticketRef').textContent = `#${newBooking.ref}`;
+
+      // Générer le QR Code
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: JSON.stringify({ ref: newBooking.ref, athlete: newBooking.lastName, zone: newBooking.zoneName, slot: newBooking.startTime }),
+        width: 140,
+        height: 140,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      updateAdminTable();
+    });
+
+    document.getElementById('newBookingBtn').addEventListener('click', () => {
+      document.getElementById('confirmationSection').classList.add('hidden');
+      document.getElementById('bookingSection').classList.remove('hidden');
+      document.getElementById('athleteForm').reset();
+      selectedSlot = null;
+      renderSlots();
+      updateSummary();
+    });
+
+    // Panel Admin
+    const toggleAdminBtn = document.getElementById('toggleAdminBtn');
+    const adminPanel = document.getElementById('adminPanel');
+    toggleAdminBtn.addEventListener('click', () => {
+      adminPanel.classList.toggle('hidden');
+    });
+
+    function updateAdminTable() {
+      const tbody = document.getElementById('adminTableBody');
+      tbody.innerHTML = '';
+      if (reservations.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-slate-500">Aucune réservation pour le moment.</td></tr>';
+        return;
+      }
+      reservations.slice().reverse().forEach(r => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="p-2 font-mono text-lime-400">#${r.ref}</td>
+          <td class="p-2 font-medium text-white">${r.firstName} ${r.lastName}</td>
+          <td class="p-2">${r.zoneName}</td>
+          <td class="p-2">${r.date} (${r.startTime}-${r.endTime})</td>
+          <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Confirmé</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    document.getElementById('resetDataBtn').addEventListener('click', () => {
+      if (confirm('Voulez-vous réinitialiser toutes les données de réservation ?')) {
+        reservations = [];
+        localStorage.removeItem('gym_reservations');
+        updateAdminTable();
+        renderSlots();
+      }
+    });
+
+    // Démarrage
+    renderSlots();
+    updateAdminTable();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
