@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Réservation Salle de Sport - Performance Hub</title>
+  <title>GymFlow - Réservation de créneaux</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- QRCode.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- QRCode.js (Génération locale robuste) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -41,7 +41,7 @@
         </div>
         <div>
           <h1 class="text-lg font-black tracking-wider text-white">GymFlow</h1>
-          <p class="text-xs text-purple-300/70">Réservation multi-créneaux & régulation</p>
+          <p class="text-xs text-purple-300/70">réservation de créneaux</p>
         </div>
       </div>
       <button id="toggleAdminBtn" class="text-xs border border-purple-900/60 bg-zinc-950 hover:bg-zinc-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-purple-300 transition">
@@ -259,10 +259,9 @@
         <p class="text-xs text-zinc-400 mt-1">Présente ce QR code unique à la borne à chaque séance.</p>
       </div>
 
-      <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mx-auto">
-        <div class="flex justify-center">
-  <img id="qrcodeImg" src="" alt="Pass QR Code" class="w-36 h-36 rounded-lg">
-</div>
+      <!-- Rendu QR Code local par Canvas -->
+      <div class="bg-white p-3 rounded-2xl inline-flex justify-center items-center shadow-inner mx-auto">
+        <canvas id="qrcodeCanvas" class="w-40 h-40"></canvas>
       </div>
 
       <div class="bg-black border border-zinc-800 rounded-2xl p-4 text-left space-y-3 text-xs">
@@ -318,7 +317,7 @@
     // Génération des créneaux 6h00 à 23h00 toutes les 30m
     function generateSlotTimes() {
       const times = [];
-      const endMax = 23 * 60; // 23h00 en minutes
+      const endMax = 23 * 60; // 23h00
       for (let h = 6; h <= 22; h++) {
         for (let m = 0; m < 60; m += 30) {
           const startTotal = h * 60 + m;
@@ -476,7 +475,7 @@
       updateFinalSummary();
     });
 
-    // Affichage des réservations sélectionnées (Panier)
+    // Affichage des réservations dans le panier
     function renderCart() {
       const cartSection = document.getElementById('cartSection');
       const cartList = document.getElementById('cartList');
@@ -550,7 +549,6 @@
         phone: document.getElementById('athletePhone').value
       };
 
-      // Sauvegarde de tous les créneaux avec le même numéro de référence
       pendingSlots.forEach(slot => {
         reservations.push({
           ref: refNumber,
@@ -581,9 +579,21 @@
         ticketList.appendChild(item);
       });
 
-      // Génération du QR Code via image dynamique
-      const qrData = encodeURIComponent(`REF:${refNumber}|ATHLETE:${athleteInfo.firstName} ${athleteInfo.lastName}|SLOTS:${pendingSlots.length}`);
-      document.getElementById('qrcodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+      // Génération locale et immédiate du QR Code sur le Canvas
+      const canvas = document.getElementById('qrcodeCanvas');
+      const passData = `GYMFLOW | REF:${refNumber} | ATHLETE:${athleteInfo.firstName} ${athleteInfo.lastName} | SESSIONS:${pendingSlots.length}`;
+      
+      QRCode.toCanvas(canvas, passData, {
+        width: 160,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      }, function (error) {
+        if (error) console.error(error);
+      });
+
       updateAdminTable();
     });
 
