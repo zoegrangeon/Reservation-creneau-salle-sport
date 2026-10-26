@@ -18,11 +18,11 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              lime: '#a3e635',
-              dark: '#0f172a',
-              card: '#1e293b',
-              border: '#334155'
+            electric: {
+              400: '#c084fc',
+              500: '#a855f7',
+              600: '#9333ea',
+              glow: '#7e22ce'
             }
           }
         }
@@ -30,22 +30,22 @@
     }
   </script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased pb-16">
+<body class="bg-black text-slate-100 min-h-screen font-sans antialiased pb-20 selection:bg-purple-600 selection:text-white">
 
   <!-- Header -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+  <header class="border-b border-purple-950/60 bg-black/90 backdrop-blur sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-lime-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-lime-400/20">
+        <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-purple-600/40 border border-purple-400/40">
           ⚡
         </div>
         <div>
-          <h1 class="text-lg font-black tracking-wide text-white">PULSE ATHLETIC CLUB</h1>
-          <p class="text-xs text-slate-400">Réservation & Régulation des Espaces</p>
+          <h1 class="text-lg font-black tracking-wider text-white">PULSE ATHLETIC CLUB</h1>
+          <p class="text-xs text-purple-300/70">Réservation multi-créneaux & régulation</p>
         </div>
       </div>
-      <button id="toggleAdminBtn" class="text-xs border border-slate-700 bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-300 transition">
-        <i data-lucide="shield-check" class="w-4 h-4"></i> Vue Superviseur
+      <button id="toggleAdminBtn" class="text-xs border border-purple-900/60 bg-zinc-950 hover:bg-zinc-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-purple-300 transition">
+        <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i> Vue Superviseur
       </button>
     </div>
   </header>
@@ -53,26 +53,26 @@
   <main class="max-w-5xl mx-auto px-4 py-8">
 
     <!-- Modal Admin / Superviseur -->
-    <div id="adminPanel" class="hidden mb-8 p-5 bg-slate-900 border border-slate-700 rounded-2xl shadow-xl">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+    <div id="adminPanel" class="hidden mb-8 p-5 bg-zinc-950 border border-purple-900/60 rounded-2xl shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
         <h2 class="font-bold flex items-center gap-2 text-white">
-          <i data-lucide="sliders" class="w-5 h-5 text-lime-400"></i> Supervision des réservations (Affluence)
+          <i data-lucide="sliders" class="w-5 h-5 text-purple-400"></i> Suivi des réservations (Affluence)
         </h2>
-        <button id="resetDataBtn" class="text-xs text-rose-400 hover:text-rose-300 underline">Réinitialiser les créneaux</button>
+        <button id="resetDataBtn" class="text-xs text-rose-400 hover:text-rose-300 underline">Réinitialiser les données</button>
       </div>
       <div class="mt-4 overflow-x-auto max-h-64">
-        <table class="w-full text-left text-xs text-slate-300">
-          <thead class="bg-slate-800 text-slate-400 uppercase text-[10px]">
+        <table class="w-full text-left text-xs text-zinc-300">
+          <thead class="bg-zinc-900 text-purple-300 uppercase text-[10px]">
             <tr>
               <th class="p-2">Réf</th>
               <th class="p-2">Athlète</th>
               <th class="p-2">Espace</th>
-              <th class="p-2">Créneau</th>
+              <th class="p-2">Date & Créneau</th>
               <th class="p-2">Statut</th>
             </tr>
           </thead>
-          <tbody id="adminTableBody" class="divide-y divide-slate-800">
-            <!-- Dynamique -->
+          <tbody id="adminTableBody" class="divide-y divide-zinc-900">
+            <!-- Rempli en JS -->
           </tbody>
         </table>
       </div>
@@ -84,95 +84,98 @@
       <!-- Étape 1 : Choix de la zone -->
       <div>
         <div class="flex items-center gap-2 mb-4">
-          <span class="w-6 h-6 rounded-full bg-lime-400 text-slate-950 flex items-center justify-center font-bold text-xs">1</span>
-          <h2 class="text-base font-bold uppercase tracking-wider text-slate-200">Choisis ton espace de travail</h2>
+          <span class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-purple-600/50">1</span>
+          <h2 class="text-base font-bold uppercase tracking-wider text-white">Choisis ton espace de travail</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="zonesContainer">
-          <!-- Card Cardio -->
-          <div data-zone="cardio" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+          
+          <!-- Espace cardio -->
+          <div data-zone="cardio" class="zone-card cursor-pointer border border-zinc-800 bg-zinc-950 hover:border-purple-500/50 rounded-2xl p-4 transition-all duration-200 relative group flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-start mb-2">
                 <span class="text-2xl">🏃</span>
-                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+                <span class="text-[11px] bg-zinc-900 text-purple-300 px-2 py-0.5 rounded-full border border-purple-900/40">Max 20</span>
               </div>
-              <h3 class="font-bold text-white text-base">Espace Cardio</h3>
-              <p class="text-xs text-slate-400 mt-1 leading-relaxed">Tapis de course, vélo, escalier, step, rameur concept 2.</p>
+              <h3 class="font-bold text-white text-base">Espace cardio</h3>
+              <p class="text-xs text-zinc-400 mt-1 leading-relaxed">Tapis de course, vélo, escalier, step, rameur...</p>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
-              <span>Sélectionner</span>
-              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            <div class="mt-4 pt-3 border-t border-zinc-900 flex items-center justify-between text-xs font-semibold text-zinc-400 group-[.selected]:text-purple-400">
+              <span class="card-status-text">Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-purple-400"></i>
             </div>
           </div>
 
-          <!-- Card Hyrox -->
-          <div data-zone="hyrox" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+          <!-- Espace hyrox -->
+          <div data-zone="hyrox" class="zone-card cursor-pointer border border-zinc-800 bg-zinc-950 hover:border-purple-500/50 rounded-2xl p-4 transition-all duration-200 relative group flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-start mb-2">
                 <span class="text-2xl">⚡</span>
-                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+                <span class="text-[11px] bg-zinc-900 text-purple-300 px-2 py-0.5 rounded-full border border-purple-900/40">Max 20</span>
               </div>
-              <h3 class="font-bold text-white text-base">Espace Hyrox</h3>
-              <p class="text-xs text-slate-400 mt-1 leading-relaxed">SkiErg, sled push/pull, sandbags, wall balls, burpees box.</p>
+              <h3 class="font-bold text-white text-base">Espace hyrox</h3>
+              <p class="text-xs text-zinc-400 mt-1 leading-relaxed">SkiErg, sled push/pull, sandbags, wall balls...</p>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
-              <span>Sélectionner</span>
-              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            <div class="mt-4 pt-3 border-t border-zinc-900 flex items-center justify-between text-xs font-semibold text-zinc-400 group-[.selected]:text-purple-400">
+              <span class="card-status-text">Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-purple-400"></i>
             </div>
           </div>
 
-          <!-- Card Bas du Corps -->
-          <div data-zone="lower" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+          <!-- Séance jambe -->
+          <div data-zone="lower" class="zone-card cursor-pointer border border-zinc-800 bg-zinc-950 hover:border-purple-500/50 rounded-2xl p-4 transition-all duration-200 relative group flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-start mb-2">
                 <span class="text-2xl">🦵</span>
-                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+                <span class="text-[11px] bg-zinc-900 text-purple-300 px-2 py-0.5 rounded-full border border-purple-900/40">Max 20</span>
               </div>
-              <h3 class="font-bold text-white text-base">Machines Bas du Corps</h3>
-              <p class="text-xs text-slate-400 mt-1 leading-relaxed">Presse à cuisses, leg curl/ext, hack squat, hip thrust guidé.</p>
+              <h3 class="font-bold text-white text-base">Séance jambe</h3>
+              <p class="text-xs text-zinc-400 mt-1 leading-relaxed">Presse à cuisses, leg curl/ext, hack squat, hip thrust...</p>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
-              <span>Sélectionner</span>
-              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            <div class="mt-4 pt-3 border-t border-zinc-900 flex items-center justify-between text-xs font-semibold text-zinc-400 group-[.selected]:text-purple-400">
+              <span class="card-status-text">Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-purple-400"></i>
             </div>
           </div>
 
-          <!-- Card Haut du Corps -->
-          <div data-zone="upper" class="zone-card cursor-pointer border-2 border-slate-800 bg-slate-900 hover:border-slate-600 rounded-2xl p-4 transition relative group flex flex-col justify-between">
+          <!-- Séance haut du corps -->
+          <div data-zone="upper" class="zone-card cursor-pointer border border-zinc-800 bg-zinc-950 hover:border-purple-500/50 rounded-2xl p-4 transition-all duration-200 relative group flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-start mb-2">
                 <span class="text-2xl">💪</span>
-                <span class="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">Max 20</span>
+                <span class="text-[11px] bg-zinc-900 text-purple-300 px-2 py-0.5 rounded-full border border-purple-900/40">Max 20</span>
               </div>
-              <h3 class="font-bold text-white text-base">Machines Haut du Corps</h3>
-              <p class="text-xs text-slate-400 mt-1 leading-relaxed">Poulies vis-à-vis, développé guidé, tirage vertical, dips/tractions.</p>
+              <h3 class="font-bold text-white text-base">Séance haut du corps</h3>
+              <p class="text-xs text-zinc-400 mt-1 leading-relaxed">Poulies vis-à-vis, développé guidé, tirage vertical, dips/tractions...</p>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-400 group-[.selected]:text-lime-400">
-              <span>Sélectionner</span>
-              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-lime-400"></i>
+            <div class="mt-4 pt-3 border-t border-zinc-900 flex items-center justify-between text-xs font-semibold text-zinc-400 group-[.selected]:text-purple-400">
+              <span class="card-status-text">Sélectionner</span>
+              <i data-lucide="check-circle" class="w-4 h-4 opacity-0 group-[.selected]:opacity-100 text-purple-400"></i>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- Étape 2 : Date & Créneau (6h - 23h toutes les 30m) -->
+      <!-- Étape 2 : Date, Durée & Créneaux -->
       <div>
         <div class="flex items-center gap-2 mb-4">
-          <span class="w-6 h-6 rounded-full bg-lime-400 text-slate-950 flex items-center justify-center font-bold text-xs">2</span>
-          <h2 class="text-base font-bold uppercase tracking-wider text-slate-200">Sélectionne ton créneau (6h00 à 23h00)</h2>
+          <span class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-purple-600/50">2</span>
+          <h2 class="text-base font-bold uppercase tracking-wider text-white">Sélectionne un jour et un créneau (6h00 à 23h00)</h2>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-4 shadow-xl">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-              <label for="bookingDate" class="text-xs font-semibold text-slate-400">Date d'entraînement :</label>
-              <input type="date" id="bookingDate" class="bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-lime-400 outline-none">
+              <label for="bookingDate" class="text-xs font-semibold text-zinc-400">Jour sélectionné :</label>
+              <input type="date" id="bookingDate" class="bg-black border border-purple-900/60 text-white rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-purple-500 outline-none">
             </div>
 
             <div class="flex items-center gap-2">
-              <span class="text-xs text-slate-400 font-semibold">Durée :</span>
-              <button type="button" data-duration="60" class="duration-btn bg-slate-800 text-slate-300 px-3 py-1 rounded-lg text-xs font-semibold border border-slate-700 active-duration">1h00</button>
-              <button type="button" data-duration="90" class="duration-btn bg-slate-800 text-slate-400 px-3 py-1 rounded-lg text-xs font-semibold border border-transparent">1h30</button>
+              <span class="text-xs text-zinc-400 font-semibold">Durée :</span>
+              <button type="button" data-duration="60" class="duration-btn bg-purple-600 text-white px-3 py-1 rounded-lg text-xs font-bold border border-purple-500 shadow-md shadow-purple-600/30">1h00</button>
+              <button type="button" data-duration="90" class="duration-btn bg-zinc-900 text-zinc-400 px-3 py-1 rounded-lg text-xs font-semibold border border-transparent hover:text-white">1h30</button>
+              <button type="button" data-duration="120" class="duration-btn bg-zinc-900 text-zinc-400 px-3 py-1 rounded-lg text-xs font-semibold border border-transparent hover:text-white">2h00</button>
             </div>
           </div>
 
@@ -182,42 +185,63 @@
               <!-- Rempli en JS -->
             </div>
           </div>
+
+          <!-- Bouton d'ajout au panier multi-jours -->
+          <div class="pt-3 border-t border-zinc-900 flex flex-wrap items-center justify-between gap-3">
+            <p id="tempSlotSummary" class="text-xs text-zinc-400">Choisis une zone et une heure pour l'ajouter à ta semaine.</p>
+            <button type="button" id="addSlotBtn" disabled class="bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-purple-600 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4"></i> Ajouter ce créneau
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Étape 3 : Coordonnées Athlète -->
+      <!-- Récapitulatif des créneaux sélectionnés (Panier) -->
+      <div id="cartSection" class="hidden">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
+            <i data-lucide="calendar-check" class="w-4 h-4"></i> Créneaux réservés pour ta semaine (<span id="cartCount">0</span>)
+          </h3>
+          <button type="button" id="clearCartBtn" class="text-[11px] text-zinc-500 hover:text-rose-400 transition">Vider tout</button>
+        </div>
+        <div id="cartList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <!-- Créneaux ajoutés dynamiquement -->
+        </div>
+      </div>
+
+      <!-- Étape 3 : Coordonnées Athlète & Confirmation Globale -->
       <div>
         <div class="flex items-center gap-2 mb-4">
-          <span class="w-6 h-6 rounded-full bg-lime-400 text-slate-950 flex items-center justify-center font-bold text-xs">3</span>
-          <h2 class="text-base font-bold uppercase tracking-wider text-slate-200">Informations de l'athlète</h2>
+          <span class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-purple-600/50">3</span>
+          <h2 class="text-base font-bold uppercase tracking-wider text-white">Informations de l'athlète</h2>
         </div>
 
-        <form id="athleteForm" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <form id="athleteForm" class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-4 shadow-xl">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Prénom</label>
-              <input type="text" id="athleteFirstName" required placeholder="Alex" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+              <label class="block text-xs font-semibold text-zinc-400 mb-1">Prénom</label>
+              <input type="text" id="athleteFirstName" required placeholder="Alex" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Nom</label>
-              <input type="text" id="athleteLastName" required placeholder="Dupont" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+              <label class="block text-xs font-semibold text-zinc-400 mb-1">Nom</label>
+              <input type="text" id="athleteLastName" required placeholder="Dupont" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Adresse e-mail</label>
-              <input type="email" id="athleteEmail" required placeholder="alex.dupont@email.fr" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+              <label class="block text-xs font-semibold text-zinc-400 mb-1">Adresse e-mail</label>
+              <input type="email" id="athleteEmail" required placeholder="alex.dupont@email.fr" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Numéro d'adhérent / Téléphone</label>
-              <input type="tel" id="athletePhone" required placeholder="06 12 34 56 78" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:border-lime-400 outline-none">
+              <label class="block text-xs font-semibold text-zinc-400 mb-1">Numéro d'adhérent / Téléphone</label>
+              <input type="tel" id="athletePhone" required placeholder="06 12 34 56 78" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
             </div>
           </div>
 
-          <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
-            <div id="bookingSummaryPreview" class="text-xs text-slate-400">
-              Sélectionne un espace et un créneau pour valider.
+          <div class="pt-4 border-t border-zinc-900 flex items-center justify-between">
+            <div id="bookingSummaryPreview" class="text-xs text-zinc-400">
+              Ajoute au moins un créneau pour valider.
             </div>
-            <button type="submit" id="submitBtn" disabled class="bg-lime-400 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed hover:bg-lime-300 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-lime-400/10">
-              Confirmer la réservation
+            <button type="submit" id="submitBtn" disabled class="bg-purple-600 disabled:bg-zinc-900 disabled:text-zinc-600 disabled:cursor-not-allowed hover:bg-purple-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-purple-600/25">
+              Valider toutes mes réservations
             </button>
           </div>
         </form>
@@ -225,64 +249,65 @@
 
     </section>
 
-    <!-- Écran de Confirmation / Pass d'accès QR -->
-    <section id="confirmationSection" class="hidden max-w-md mx-auto my-12 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-center space-y-6">
-      <div class="w-14 h-14 bg-lime-400/10 border border-lime-400/30 text-lime-400 rounded-2xl mx-auto flex items-center justify-center">
+    <!-- Écran de Confirmation / Pass d'accès QR Multi-séances -->
+    <section id="confirmationSection" class="hidden max-w-lg mx-auto my-8 bg-zinc-950 border border-purple-900/60 rounded-3xl p-6 shadow-2xl text-center space-y-6">
+      <div class="w-14 h-14 bg-purple-600/20 border border-purple-500/40 text-purple-400 rounded-2xl mx-auto flex items-center justify-center">
         <i data-lucide="check" class="w-8 h-8"></i>
       </div>
       <div>
-        <h2 class="text-xl font-black text-white">Réservation Confirmée !</h2>
-        <p class="text-xs text-slate-400 mt-1">Présente ce pass à la borne de contrôle d'accès.</p>
+        <h2 class="text-xl font-black text-white">Pass d'Entraînement Confirmé !</h2>
+        <p class="text-xs text-zinc-400 mt-1">Présente ce QR code unique à la borne à chaque séance.</p>
       </div>
 
       <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mx-auto">
         <div id="qrcode" class="flex justify-center"></div>
       </div>
 
-      <div class="bg-slate-950 border border-slate-800/80 rounded-2xl p-4 text-left space-y-2 text-xs">
-        <div class="flex justify-between">
-          <span class="text-slate-500">Athlète :</span>
+      <div class="bg-black border border-zinc-800 rounded-2xl p-4 text-left space-y-3 text-xs">
+        <div class="flex justify-between border-b border-zinc-900 pb-2">
+          <span class="text-zinc-500">Athlète :</span>
           <span id="ticketAthlete" class="font-bold text-white">Alex Dupont</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Espace :</span>
-          <span id="ticketZone" class="font-bold text-lime-400">Espace Hyrox</span>
+        <div>
+          <span class="text-zinc-500 block mb-1.5">Créneaux réservés :</span>
+          <div id="ticketBookingsList" class="space-y-1 text-zinc-300">
+            <!-- Rempli en JS -->
+          </div>
         </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Date & Heure :</span>
-          <span id="ticketSlot" class="font-bold text-white">2026-10-26 | 08h00 - 09h30</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Réf :</span>
-          <span id="ticketRef" class="font-mono text-slate-300">#PULSE-8942</span>
+        <div class="flex justify-between border-t border-zinc-900 pt-2">
+          <span class="text-zinc-500">Réf réservation :</span>
+          <span id="ticketRef" class="font-mono text-purple-400">#PULSE-8942</span>
         </div>
       </div>
 
-      <button id="newBookingBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">
-        Effectuer une autre réservation
+      <button id="newBookingBtn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-2.5 rounded-xl text-xs transition border border-zinc-800">
+        Faire d'autres réservations
       </button>
     </section>
 
   </main>
 
   <script>
-    // Initialisation
+    // Configuration & Zones avec les libellés exacts
     const CAPACITY_LIMIT = 20;
     const ZONES = {
-      cardio: 'Espace Cardio',
-      hyrox: 'Espace Hyrox',
-      lower: 'Machines Bas du Corps',
-      upper: 'Machines Haut du Corps'
+      cardio: 'Espace cardio',
+      hyrox: 'Espace hyrox',
+      lower: 'Séance jambe',
+      upper: 'Séance haut du corps'
     };
 
     let selectedZone = null;
     let selectedSlot = null;
-    let selectedDuration = 60; // en minutes
+    let selectedDuration = 60; // 60, 90, ou 120 min
+
+    // Panier des créneaux sélectionnés en attente de validation
+    let pendingSlots = [];
 
     // Données stockées localement
-    let reservations = JSON.parse(localStorage.getItem('gym_reservations')) || [];
+    let reservations = JSON.parse(localStorage.getItem('gym_reservations_v2')) || [];
 
-    // Configuration de la date du jour par défaut
+    // Initialisation Date du jour
     const dateInput = document.getElementById('bookingDate');
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
@@ -291,13 +316,15 @@
     // Génération des créneaux 6h00 à 23h00 toutes les 30m
     function generateSlotTimes() {
       const times = [];
+      const endMax = 23 * 60; // 23h00 en minutes
       for (let h = 6; h <= 22; h++) {
         for (let m = 0; m < 60; m += 30) {
-          if (h === 22 && m > 30 && selectedDuration === 60) continue;
-          if (h === 22 && m > 0 && selectedDuration === 90) continue;
-          const startH = String(h).padStart(2, '0');
-          const startM = String(m).padStart(2, '0');
-          times.push(`${startH}:${startM}`);
+          const startTotal = h * 60 + m;
+          if (startTotal + selectedDuration <= endMax) {
+            const startH = String(h).padStart(2, '0');
+            const startM = String(m).padStart(2, '0');
+            times.push(`${startH}:${startM}`);
+          }
         }
       }
       return times;
@@ -311,14 +338,21 @@
       return `${endH}:${endM}`;
     }
 
+    function formatDisplayDate(dateStr) {
+      const options = { weekday: 'short', day: 'numeric', month: 'short' };
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('fr-FR', options);
+    }
+
     // Calcul des places restantes
     function getRemainingSeats(zone, date, startTime) {
       if (!zone) return CAPACITY_LIMIT;
       const booked = reservations.filter(r => r.zone === zone && r.date === date && r.startTime === startTime).length;
-      return Math.max(0, CAPACITY_LIMIT - booked);
+      const inCart = pendingSlots.filter(s => s.zone === zone && s.date === date && s.startTime === startTime).length;
+      return Math.max(0, CAPACITY_LIMIT - booked - inCart);
     }
 
-    // Affichage des cartes de créneaux
+    // Affichage des créneaux
     function renderSlots() {
       const slotsGrid = document.getElementById('slotsGrid');
       slotsGrid.innerHTML = '';
@@ -334,15 +368,15 @@
         const slotCard = document.createElement('div');
         slotCard.className = `p-2.5 rounded-xl border text-center transition cursor-pointer text-xs flex flex-col justify-between ${
           isFull
-            ? 'bg-slate-950/40 border-slate-900 text-slate-600 cursor-not-allowed opacity-60'
+            ? 'bg-zinc-950/40 border-zinc-900 text-zinc-700 cursor-not-allowed opacity-50'
             : isSelected
-              ? 'bg-lime-400 text-slate-950 border-lime-400 font-bold shadow-md shadow-lime-400/20'
-              : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-600'
+              ? 'bg-purple-600 text-white border-purple-400 font-bold shadow-lg shadow-purple-600/30'
+              : 'bg-black border-zinc-800 text-zinc-300 hover:border-purple-600/50'
         }`;
 
         slotCard.innerHTML = `
           <div class="font-semibold">${time} - ${endTime}</div>
-          <div class="text-[10px] mt-1 ${isSelected ? 'text-slate-900 font-bold' : isFull ? 'text-rose-500' : remaining <= 5 ? 'text-amber-400' : 'text-slate-500'}">
+          <div class="text-[10px] mt-1 ${isSelected ? 'text-purple-200' : isFull ? 'text-rose-500' : remaining <= 5 ? 'text-amber-400' : 'text-zinc-500'}">
             ${isFull ? 'Complet' : `${remaining} places`}
           </div>
         `;
@@ -351,7 +385,7 @@
           slotCard.addEventListener('click', () => {
             selectedSlot = time;
             renderSlots();
-            updateSummary();
+            updateTempSlotPreview();
           });
         }
 
@@ -359,96 +393,204 @@
       });
     }
 
-    // Gestion du choix de zone
+    // Sélection d'une zone
     document.querySelectorAll('.zone-card').forEach(card => {
       card.addEventListener('click', () => {
         document.querySelectorAll('.zone-card').forEach(c => {
-          c.classList.remove('selected', 'border-lime-400', 'bg-lime-950/20');
-          c.classList.add('border-slate-800', 'bg-slate-900');
+          c.classList.remove('selected', 'border-purple-500', 'bg-purple-950/20');
+          c.classList.add('border-zinc-800', 'bg-zinc-950');
         });
-        card.classList.add('selected', 'border-lime-400', 'bg-lime-950/20');
-        card.classList.remove('border-slate-800', 'bg-slate-900');
+        card.classList.add('selected', 'border-purple-500', 'bg-purple-950/20');
+        card.classList.remove('border-zinc-800', 'bg-zinc-950');
         
         selectedZone = card.dataset.zone;
         renderSlots();
-        updateSummary();
+        updateTempSlotPreview();
       });
     });
 
-    // Durée 1h ou 1h30
+    // Choix de la durée (1h, 1h30, 2h)
     document.querySelectorAll('.duration-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.duration-btn').forEach(b => {
-          b.classList.remove('bg-lime-400', 'text-slate-950');
-          b.classList.add('bg-slate-800', 'text-slate-400');
+          b.classList.remove('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-md', 'shadow-purple-600/30');
+          b.classList.add('bg-zinc-900', 'text-zinc-400', 'border-transparent');
         });
-        e.target.classList.add('bg-lime-400', 'text-slate-950');
-        e.target.classList.remove('bg-slate-800', 'text-slate-400');
+        e.target.classList.add('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-md', 'shadow-purple-600/30');
+        e.target.classList.remove('bg-zinc-900', 'text-zinc-400', 'border-transparent');
+        
         selectedDuration = parseInt(e.target.dataset.duration);
+        selectedSlot = null;
         renderSlots();
-        updateSummary();
+        updateTempSlotPreview();
       });
     });
 
     dateInput.addEventListener('change', () => {
+      selectedSlot = null;
       renderSlots();
-      updateSummary();
+      updateTempSlotPreview();
     });
 
-    function updateSummary() {
-      const summary = document.getElementById('bookingSummaryPreview');
-      const submitBtn = document.getElementById('submitBtn');
+    function updateTempSlotPreview() {
+      const preview = document.getElementById('tempSlotSummary');
+      const addBtn = document.getElementById('addSlotBtn');
 
       if (selectedZone && selectedSlot) {
         const endTime = calculateEndTime(selectedSlot, selectedDuration);
-        summary.innerHTML = `<span class="text-white font-semibold">${ZONES[selectedZone]}</span> le <span class="text-white">${dateInput.value}</span> de <span class="text-lime-400 font-bold">${selectedSlot} à ${endTime}</span>.`;
+        preview.innerHTML = `Sélection : <span class="text-purple-300 font-semibold">${ZONES[selectedZone]}</span> le <span class="text-white font-medium">${formatDisplayDate(dateInput.value)}</span> (${selectedSlot} - ${endTime}).`;
+        addBtn.removeAttribute('disabled');
+        addBtn.classList.add('bg-purple-600');
+        addBtn.classList.remove('bg-zinc-800');
+      } else {
+        preview.textContent = 'Choisis une zone et un créneau ci-dessus pour l’ajouter.';
+        addBtn.setAttribute('disabled', 'true');
+        addBtn.classList.remove('bg-purple-600');
+        addBtn.classList.add('bg-zinc-800');
+      }
+    }
+
+    // Ajouter au panier multi-créneaux
+    document.getElementById('addSlotBtn').addEventListener('click', () => {
+      if (!selectedZone || !selectedSlot) return;
+
+      const slotObj = {
+        id: Date.now() + Math.random(),
+        zone: selectedZone,
+        zoneName: ZONES[selectedZone],
+        date: dateInput.value,
+        dateFormatted: formatDisplayDate(dateInput.value),
+        startTime: selectedSlot,
+        duration: selectedDuration,
+        endTime: calculateEndTime(selectedSlot, selectedDuration)
+      };
+
+      pendingSlots.push(slotObj);
+      selectedSlot = null;
+      
+      renderCart();
+      renderSlots();
+      updateTempSlotPreview();
+      updateFinalSummary();
+    });
+
+    // Affichage des réservations sélectionnées (Panier)
+    function renderCart() {
+      const cartSection = document.getElementById('cartSection');
+      const cartList = document.getElementById('cartList');
+      const cartCount = document.getElementById('cartCount');
+
+      if (pendingSlots.length === 0) {
+        cartSection.classList.add('hidden');
+        return;
+      }
+
+      cartSection.classList.remove('hidden');
+      cartCount.textContent = pendingSlots.length;
+      cartList.innerHTML = '';
+
+      pendingSlots.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'bg-zinc-950 border border-purple-900/60 rounded-xl p-3 flex items-center justify-between text-xs';
+        div.innerHTML = `
+          <div>
+            <div class="font-bold text-white">${item.zoneName}</div>
+            <div class="text-purple-300 capitalize">${item.dateFormatted}</div>
+            <div class="text-zinc-500">${item.startTime} - ${item.endTime} (${item.duration / 60}h)</div>
+          </div>
+          <button type="button" class="text-zinc-500 hover:text-rose-400 p-1" onclick="removeCartItem(${item.id})">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        `;
+        cartList.appendChild(div);
+      });
+
+      lucide.createIcons();
+    }
+
+    window.removeCartItem = function(id) {
+      pendingSlots = pendingSlots.filter(s => s.id !== id);
+      renderCart();
+      renderSlots();
+      updateFinalSummary();
+    };
+
+    document.getElementById('clearCartBtn').addEventListener('click', () => {
+      pendingSlots = [];
+      renderCart();
+      renderSlots();
+      updateFinalSummary();
+    });
+
+    function updateFinalSummary() {
+      const summary = document.getElementById('bookingSummaryPreview');
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (pendingSlots.length > 0) {
+        summary.innerHTML = `<span class="text-purple-400 font-bold">${pendingSlots.length} créneau(x)</span> prêt(s) à être validé(s).`;
         submitBtn.removeAttribute('disabled');
       } else {
-        summary.textContent = 'Sélectionne un espace et un créneau pour valider.';
+        summary.textContent = 'Ajoute au moins un créneau ci-dessus pour valider.';
         submitBtn.setAttribute('disabled', 'true');
       }
     }
 
-    // Soumission du formulaire
+    // Soumission du formulaire athlète
     document.getElementById('athleteForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!selectedZone || !selectedSlot) return;
+      if (pendingSlots.length === 0) return;
 
       const refNumber = 'PULSE-' + Math.floor(1000 + Math.random() * 9000);
-      const newBooking = {
-        ref: refNumber,
+      const athleteInfo = {
         firstName: document.getElementById('athleteFirstName').value,
         lastName: document.getElementById('athleteLastName').value,
         email: document.getElementById('athleteEmail').value,
-        phone: document.getElementById('athletePhone').value,
-        zone: selectedZone,
-        zoneName: ZONES[selectedZone],
-        date: dateInput.value,
-        startTime: selectedSlot,
-        endTime: calculateEndTime(selectedSlot, selectedDuration)
+        phone: document.getElementById('athletePhone').value
       };
 
-      reservations.push(newBooking);
-      localStorage.setItem('gym_reservations', JSON.stringify(reservations));
+      // Sauvegarde de tous les créneaux avec le même numéro de référence
+      pendingSlots.forEach(slot => {
+        reservations.push({
+          ref: refNumber,
+          ...athleteInfo,
+          ...slot
+        });
+      });
+
+      localStorage.setItem('gym_reservations_v2', JSON.stringify(reservations));
 
       // Affichage du Pass
       document.getElementById('bookingSection').classList.add('hidden');
       const confSection = document.getElementById('confirmationSection');
       confSection.classList.remove('hidden');
 
-      document.getElementById('ticketAthlete').textContent = `${newBooking.firstName} ${newBooking.lastName}`;
-      document.getElementById('ticketZone').textContent = newBooking.zoneName;
-      document.getElementById('ticketSlot').textContent = `${newBooking.date} | ${newBooking.startTime} - ${newBooking.endTime}`;
-      document.getElementById('ticketRef').textContent = `#${newBooking.ref}`;
+      document.getElementById('ticketAthlete').textContent = `${athleteInfo.firstName} ${athleteInfo.lastName}`;
+      document.getElementById('ticketRef').textContent = `#${refNumber}`;
 
-      // Générer le QR Code
+      const ticketList = document.getElementById('ticketBookingsList');
+      ticketList.innerHTML = '';
+      pendingSlots.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center text-[11px] py-1 border-b border-zinc-900 last:border-0';
+        item.innerHTML = `
+          <span class="text-purple-300 font-medium">${s.zoneName}</span>
+          <span class="text-zinc-400">${s.dateFormatted} | ${s.startTime}-${s.endTime}</span>
+        `;
+        ticketList.appendChild(item);
+      });
+
+      // Génération du QR Code récapitulant les créneaux
       const qrContainer = document.getElementById('qrcode');
       qrContainer.innerHTML = '';
       new QRCode(qrContainer, {
-        text: JSON.stringify({ ref: newBooking.ref, athlete: newBooking.lastName, zone: newBooking.zoneName, slot: newBooking.startTime }),
+        text: JSON.stringify({
+          ref: refNumber,
+          athlete: `${athleteInfo.firstName} ${athleteInfo.lastName}`,
+          slots: pendingSlots.map(s => `${s.zoneName}@${s.date}_${s.startTime}`)
+        }),
         width: 140,
         height: 140,
-        colorDark: "#0f172a",
+        colorDark: "#000000",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.M
       });
@@ -456,13 +598,16 @@
       updateAdminTable();
     });
 
+    // Recommencer une réservation
     document.getElementById('newBookingBtn').addEventListener('click', () => {
       document.getElementById('confirmationSection').classList.add('hidden');
       document.getElementById('bookingSection').classList.remove('hidden');
       document.getElementById('athleteForm').reset();
+      pendingSlots = [];
       selectedSlot = null;
+      renderCart();
       renderSlots();
-      updateSummary();
+      updateFinalSummary();
     });
 
     // Panel Admin
@@ -476,17 +621,17 @@
       const tbody = document.getElementById('adminTableBody');
       tbody.innerHTML = '';
       if (reservations.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-slate-500">Aucune réservation pour le moment.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-zinc-600">Aucune réservation pour le moment.</td></tr>';
         return;
       }
       reservations.slice().reverse().forEach(r => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td class="p-2 font-mono text-lime-400">#${r.ref}</td>
+          <td class="p-2 font-mono text-purple-400">#${r.ref}</td>
           <td class="p-2 font-medium text-white">${r.firstName} ${r.lastName}</td>
-          <td class="p-2">${r.zoneName}</td>
-          <td class="p-2">${r.date} (${r.startTime}-${r.endTime})</td>
-          <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Confirmé</span></td>
+          <td class="p-2 text-zinc-300">${r.zoneName}</td>
+          <td class="p-2 text-zinc-400">${r.date} (${r.startTime}-${r.endTime})</td>
+          <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] bg-purple-950 text-purple-300 border border-purple-800">Confirmé</span></td>
         `;
         tbody.appendChild(row);
       });
@@ -495,13 +640,13 @@
     document.getElementById('resetDataBtn').addEventListener('click', () => {
       if (confirm('Voulez-vous réinitialiser toutes les données de réservation ?')) {
         reservations = [];
-        localStorage.removeItem('gym_reservations');
+        localStorage.removeItem('gym_reservations_v2');
         updateAdminTable();
         renderSlots();
       }
     });
 
-    // Démarrage
+    // Démarrage initial
     renderSlots();
     updateAdminTable();
     lucide.createIcons();
