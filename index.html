@@ -40,7 +40,7 @@
           ⚡
         </div>
         <div>
-          <h1 class="text-lg font-black tracking-wider text-white">PULSE ATHLETIC CLUB</h1>
+          <h1 class="text-lg font-black tracking-wider text-white">GymFlow</h1>
           <p class="text-xs text-purple-300/70">Réservation multi-créneaux & régulation</p>
         </div>
       </div>
@@ -260,7 +260,9 @@
       </div>
 
       <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mx-auto">
-        <div id="qrcode" class="flex justify-center"></div>
+        <div class="flex justify-center">
+  <img id="qrcodeImg" src="" alt="Pass QR Code" class="w-36 h-36 rounded-lg">
+</div>
       </div>
 
       <div class="bg-black border border-zinc-800 rounded-2xl p-4 text-left space-y-3 text-xs">
@@ -579,22 +581,9 @@
         ticketList.appendChild(item);
       });
 
-      // Génération du QR Code récapitulant les créneaux
-      const qrContainer = document.getElementById('qrcode');
-      qrContainer.innerHTML = '';
-      new QRCode(qrContainer, {
-        text: JSON.stringify({
-          ref: refNumber,
-          athlete: `${athleteInfo.firstName} ${athleteInfo.lastName}`,
-          slots: pendingSlots.map(s => `${s.zoneName}@${s.date}_${s.startTime}`)
-        }),
-        width: 140,
-        height: 140,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-
+      // Génération du QR Code via image dynamique
+      const qrData = encodeURIComponent(`REF:${refNumber}|ATHLETE:${athleteInfo.firstName} ${athleteInfo.lastName}|SLOTS:${pendingSlots.length}`);
+      document.getElementById('qrcodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
       updateAdminTable();
     });
 
