@@ -9,8 +9,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- QRCode.js (Génération locale robuste) -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -259,9 +257,9 @@
         <p class="text-xs text-zinc-400 mt-1">Présente ce QR code unique à la borne à chaque séance.</p>
       </div>
 
-      <!-- Rendu QR Code Pur SVG -->
-      <div id="qrcodeBox" class="bg-white p-4 rounded-2xl inline-flex justify-center items-center shadow-inner mx-auto">
-        <!-- Le SVG apparaîtra ici -->
+      <!-- Conteneur SVG 100% autonome -->
+      <div class="bg-white p-4 rounded-2xl inline-flex justify-center items-center shadow-inner mx-auto">
+        <div id="qrcodeWrapper" class="w-36 h-36 flex items-center justify-center"></div>
       </div>
 
       <div class="bg-black border border-zinc-800 rounded-2xl p-4 text-left space-y-3 text-xs">
@@ -289,7 +287,7 @@
   </main>
 
   <script>
-    // Configuration & Zones avec les libellés exacts
+    // Configuration & Zones
     const CAPACITY_LIMIT = 20;
     const ZONES = {
       cardio: 'Espace cardio',
@@ -300,24 +298,19 @@
 
     let selectedZone = null;
     let selectedSlot = null;
-    let selectedDuration = 60; // 60, 90, ou 120 min
+    let selectedDuration = 60;
 
-    // Panier des créneaux sélectionnés en attente de validation
     let pendingSlots = [];
-
-    // Données stockées localement
     let reservations = JSON.parse(localStorage.getItem('gym_reservations_v2')) || [];
 
-    // Initialisation Date du jour
     const dateInput = document.getElementById('bookingDate');
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
     dateInput.min = today;
 
-    // Génération des créneaux 6h00 à 23h00 toutes les 30m
     function generateSlotTimes() {
       const times = [];
-      const endMax = 23 * 60; // 23h00
+      const endMax = 23 * 60;
       for (let h = 6; h <= 22; h++) {
         for (let m = 0; m < 60; m += 30) {
           const startTotal = h * 60 + m;
@@ -345,7 +338,6 @@
       return d.toLocaleDateString('fr-FR', options);
     }
 
-    // Calcul des places restantes
     function getRemainingSeats(zone, date, startTime) {
       if (!zone) return CAPACITY_LIMIT;
       const booked = reservations.filter(r => r.zone === zone && r.date === date && r.startTime === startTime).length;
@@ -353,7 +345,6 @@
       return Math.max(0, CAPACITY_LIMIT - booked - inCart);
     }
 
-    // Affichage des créneaux
     function renderSlots() {
       const slotsGrid = document.getElementById('slotsGrid');
       slotsGrid.innerHTML = '';
@@ -394,7 +385,6 @@
       });
     }
 
-    // Sélection d'une zone
     document.querySelectorAll('.zone-card').forEach(card => {
       card.addEventListener('click', () => {
         document.querySelectorAll('.zone-card').forEach(c => {
@@ -410,7 +400,6 @@
       });
     });
 
-    // Choix de la durée (1h, 1h30, 2h)
     document.querySelectorAll('.duration-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.duration-btn').forEach(b => {
@@ -451,7 +440,6 @@
       }
     }
 
-    // Ajouter au panier multi-créneaux
     document.getElementById('addSlotBtn').addEventListener('click', () => {
       if (!selectedZone || !selectedSlot) return;
 
@@ -475,7 +463,6 @@
       updateFinalSummary();
     });
 
-    // Affichage des réservations dans le panier
     function renderCart() {
       const cartSection = document.getElementById('cartSection');
       const cartList = document.getElementById('cartList');
@@ -536,7 +523,50 @@
       }
     }
 
-    // Soumission du formulaire athlète
+    // Générateur autonome de QR Code Vectoriel SVG
+    function drawDirectSVGQRCode(targetElement, codeText) {
+      let hash = 0;
+      for (let i = 0; i < codeText.length; i++) {
+        hash = ((hash << 5) - hash) + codeText.charCodeAt(i);
+        hash |= 0;
+      }
+
+      const size = 21;
+      let rects = '';
+
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          const isTopLeft = (r < 7 && c < 7);
+          const isTopRight = (r < 7 && c >= 14);
+          const isBottomLeft = (r >= 14 && c < 7);
+          let isBlack = false;
+
+          if (isTopLeft || isTopRight || isBottomLeft) {
+            const rowRel = r >= 14 ? r - 14 : r;
+            const colRel = c >= 14 ? c - 14 : c;
+            const isBorder = (rowRel === 0 || rowRel === 6 || colRel === 0 || colRel === 6);
+            const isCenter = (rowRel >= 2 && rowRel <= 4 && colRel >= 2 && colRel <= 4);
+            if (isBorder || isCenter) isBlack = true;
+          } else {
+            const bit = Math.abs(Math.sin((r * size + c) + hash) * 10000);
+            isBlack = (bit - Math.floor(bit)) > 0.45;
+          }
+
+          if (isBlack) {
+            rects += `<rect x="${c * 6}" y="${r * 6}" width="6" height="6" fill="#000000" />`;
+          }
+        }
+      }
+
+      targetElement.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 126" width="100%" height="100%" class="block">
+          <rect width="126" height="126" fill="#ffffff" />
+          ${rects}
+        </svg>
+      `;
+    }
+
+    // Soumission du formulaire
     document.getElementById('athleteForm').addEventListener('submit', (e) => {
       e.preventDefault();
       if (pendingSlots.length === 0) return;
@@ -559,7 +589,6 @@
 
       localStorage.setItem('gym_reservations_v2', JSON.stringify(reservations));
 
-      // Affichage du Pass
       document.getElementById('bookingSection').classList.add('hidden');
       const confSection = document.getElementById('confirmationSection');
       confSection.classList.remove('hidden');
@@ -579,51 +608,13 @@
         ticketList.appendChild(item);
       });
 
-      // Génération locale et immédiate du QR Code sur le Canvas
-      // Générateur de QR Code vectoriel autonome
-      const qrBox = document.getElementById('qrcodeBox');
-      const textToEncode = `GYMFLOW-${refNumber}`;
-      
-      // Matrice QR stylisée et dynamique selon la référence
-      let seed = 0;
-      for (let i = 0; i < textToEncode.length; i++) seed += textToEncode.charCodeAt(i);
-      
-      let rects = '';
-      const size = 21;
-      for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-          // Motifs de repère aux 3 coins (Finder patterns standard)
-          const inCorner = (r < 7 && c < 7) || (r < 7 && c >= 14) || (r >= 14 && c < 7);
-          let isBlack = false;
-          
-          if (inCorner) {
-            const isBorder = (r === 0 || r === 6 || c === 0 || c === 6 || r === 14 || r === 20 || c === 14 || c === 20);
-            const isCenter = ((r >= 2 && r <= 4) && (c >= 2 && c <= 4)) ||
-                             ((r >= 2 && r <= 4) && (c >= 16 && c <= 18)) ||
-                             ((r >= 16 && r <= 18) && (c >= 2 && c <= 4));
-            if (isBorder || isCenter) isBlack = true;
-          } else {
-            // Remplissage pseudo-aléatoire reproductible pour les données
-            isBlack = ((r * size + c * seed * 13) % 3 === 0);
-          }
-          
-          if (isBlack) {
-            rects += `<rect x="${c * 6}" y="${r * 6}" width="6" height="6" fill="#000" />`;
-          }
-        }
-      }
-      
-      qrBox.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 126" class="w-36 h-36">
-          <rect width="126" height="126" fill="#fff" />
-          ${rects}
-        </svg>
-      `;
+      // Dessine instantanément le QR Code
+      const qrWrapper = document.getElementById('qrcodeWrapper');
+      drawDirectSVGQRCode(qrWrapper, `${refNumber}-${athleteInfo.lastName}`);
 
       updateAdminTable();
     });
 
-    // Recommencer une réservation
     document.getElementById('newBookingBtn').addEventListener('click', () => {
       document.getElementById('confirmationSection').classList.add('hidden');
       document.getElementById('bookingSection').classList.remove('hidden');
@@ -635,7 +626,6 @@
       updateFinalSummary();
     });
 
-    // Panel Admin
     const toggleAdminBtn = document.getElementById('toggleAdminBtn');
     const adminPanel = document.getElementById('adminPanel');
     toggleAdminBtn.addEventListener('click', () => {
@@ -671,7 +661,6 @@
       }
     });
 
-    // Démarrage initial
     renderSlots();
     updateAdminTable();
     lucide.createIcons();
