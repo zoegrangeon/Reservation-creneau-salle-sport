@@ -259,9 +259,9 @@
         <p class="text-xs text-zinc-400 mt-1">Présente ce QR code unique à la borne à chaque séance.</p>
       </div>
 
-      <!-- Rendu QR Code local par Canvas -->
+      <!-- QR Code via image Google -->
       <div class="bg-white p-3 rounded-2xl inline-flex justify-center items-center shadow-inner mx-auto">
-        <canvas id="qrcodeCanvas" class="w-40 h-40"></canvas>
+        <img id="qrcodeImg" src="" alt="QR Code Pass" class="w-40 h-40 block">
       </div>
 
       <div class="bg-black border border-zinc-800 rounded-2xl p-4 text-left space-y-3 text-xs">
@@ -580,19 +580,8 @@
       });
 
       // Génération locale et immédiate du QR Code sur le Canvas
-      const canvas = document.getElementById('qrcodeCanvas');
-      const passData = `GYMFLOW | REF:${refNumber} | ATHLETE:${athleteInfo.firstName} ${athleteInfo.lastName} | SESSIONS:${pendingSlots.length}`;
-      
-      QRCode.toCanvas(canvas, passData, {
-        width: 160,
-        margin: 1,
-        color: {
-          dark: '#000000',
-          light: '#ffffff'
-        }
-      }, function (error) {
-        if (error) console.error(error);
-      });
+      const passData = encodeURIComponent(`GYMFLOW | REF:${refNumber} | ATHLETE:${athleteInfo.firstName} ${athleteInfo.lastName}`);
+      document.getElementById('qrcodeImg').src = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${passData}&choe=UTF-8`;
 
       updateAdminTable();
     });
