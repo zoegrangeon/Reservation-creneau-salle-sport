@@ -286,6 +286,51 @@
 
   </main>
 
+  <!-- Modale d'authentification Superviseur (Mot de passe) -->
+  <div id="adminPasswordModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-zinc-950 border border-purple-900/60 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/30">
+          <i data-lucide="lock" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-white text-base">Accès Superviseur</h3>
+          <p class="text-xs text-zinc-400">Code d'autorisation requis</p>
+        </div>
+      </div>
+
+      <form id="adminAuthForm" class="space-y-4">
+        <div>
+          <input 
+            type="password" 
+            id="adminPasswordInput" 
+            placeholder="Code d'accès" 
+            class="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500 transition-colors tracking-widest text-center text-base"
+            autocomplete="off"
+            required
+          >
+          <p id="adminAuthError" class="text-xs text-rose-500 mt-2 hidden text-center font-medium">Code d'accès incorrect</p>
+        </div>
+
+        <div class="flex gap-2">
+          <button 
+            type="button" 
+            id="adminCancelBtn" 
+            class="w-1/2 py-2 rounded-xl border border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors text-xs font-medium"
+          >
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="w-1/2 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-colors text-xs font-bold shadow-md shadow-purple-600/30"
+          >
+            Valider
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     // Configuration & Zones
     const CAPACITY_LIMIT = 20;
@@ -626,10 +671,47 @@
       updateFinalSummary();
     });
 
+    // --- Gestion Authentification Superviseur (0129#) ---
+    const SUPERVISOR_PIN = "0129#";
     const toggleAdminBtn = document.getElementById('toggleAdminBtn');
     const adminPanel = document.getElementById('adminPanel');
+    const adminPasswordModal = document.getElementById('adminPasswordModal');
+    const adminAuthForm = document.getElementById('adminAuthForm');
+    const adminPasswordInput = document.getElementById('adminPasswordInput');
+    const adminAuthError = document.getElementById('adminAuthError');
+    const adminCancelBtn = document.getElementById('adminCancelBtn');
+
     toggleAdminBtn.addEventListener('click', () => {
-      adminPanel.classList.toggle('hidden');
+      // Si le panneau est déjà affiché, on peut le masquer sans redemander le mot de passe
+      if (!adminPanel.classList.contains('hidden')) {
+        adminPanel.classList.add('hidden');
+        return;
+      }
+      
+      // Sinon, on ouvre la modale de mot de passe
+      adminAuthError.classList.add('hidden');
+      adminPasswordInput.value = '';
+      adminPasswordModal.classList.remove('hidden');
+      setTimeout(() => adminPasswordInput.focus(), 60);
+      lucide.createIcons();
+    });
+
+    adminAuthForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (adminPasswordInput.value === SUPERVISOR_PIN) {
+        adminPasswordModal.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        updateAdminTable();
+        adminPanel.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        adminAuthError.classList.remove('hidden');
+        adminPasswordInput.value = '';
+        adminPasswordInput.focus();
+      }
+    });
+
+    adminCancelBtn.addEventListener('click', () => {
+      adminPasswordModal.classList.add('hidden');
     });
 
     function updateAdminTable() {
