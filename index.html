@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GymFlow - Réservation de créneaux</title>
+  <title>GymFlow - Plateforme de Réservation & Espace Athlète</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -30,26 +30,44 @@
 </head>
 <body class="bg-black text-slate-100 min-h-screen font-sans antialiased pb-20 selection:bg-purple-600 selection:text-white">
 
-  <!-- Header -->
+  <!-- Header Global -->
   <header class="border-b border-purple-950/60 bg-black/90 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-purple-600/40 border border-purple-400/40">
-          ⚡
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <button id="navLogoBtn" class="flex items-center gap-3 group text-left">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-purple-600/30 border border-purple-400/30 group-hover:scale-105 transition">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
         </div>
         <div>
-          <h1 class="text-lg font-black tracking-wider text-white">GymFlow</h1>
-          <p class="text-xs text-purple-300/70">réservation de créneaux</p>
+          <span class="text-lg font-black tracking-wider text-white flex items-center gap-1.5">
+            GymFlow <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800 uppercase tracking-normal">STAPS</span>
+          </span>
+          <p class="text-[11px] text-purple-300/70 font-mono">Performance & Réservations</p>
         </div>
-      </div>
+      </button>
       
+      <!-- Menu de Navigation -->
       <div class="flex items-center gap-2">
-        <button id="navBookingBtn" class="text-xs border border-purple-900/60 bg-zinc-950 hover:bg-zinc-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-purple-300 transition">
+        <div id="userBadge" class="hidden items-center gap-2 px-3 py-1 bg-zinc-950 border border-purple-900/60 rounded-xl text-xs">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+          <span id="navUserName" class="text-white font-medium">Alex D.</span>
+        </div>
+
+        <button id="navBookingBtn" class="hidden text-xs border border-purple-900/60 bg-zinc-950 hover:bg-zinc-900 px-3 py-1.5 rounded-lg items-center gap-1.5 text-purple-300 transition">
           <i data-lucide="calendar" class="w-4 h-4 text-purple-400"></i> Réserver
         </button>
-        <button id="navProfileBtn" class="text-xs border border-purple-900/60 bg-zinc-950 hover:bg-zinc-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-purple-300 transition">
+
+        <button id="navProfileBtn" class="hidden text-xs border border-purple-900/60 bg-zinc-950 hover:bg-zinc-900 px-3 py-1.5 rounded-lg items-center gap-1.5 text-purple-300 transition">
           <i data-lucide="user" class="w-4 h-4 text-purple-400"></i> Mon Compte
         </button>
+
+        <button id="logoutBtn" class="hidden text-xs text-zinc-500 hover:text-rose-400 px-2 py-1.5 transition" title="Se déconnecter">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+
         <button id="toggleAdminBtn" class="text-xs border border-purple-900/60 bg-zinc-950 hover:bg-zinc-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-purple-300 transition">
           <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i> Superviseur
         </button>
@@ -62,8 +80,8 @@
     <!-- Modal Admin / Superviseur -->
     <div id="adminPanel" class="hidden mb-8 p-5 bg-zinc-950 border border-purple-900/60 rounded-2xl shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
-        <h2 class="font-bold flex items-center gap-2 text-white">
-          <i data-lucide="sliders" class="w-5 h-5 text-purple-400"></i> Suivi des réservations (Affluence)
+        <h2 class="font-bold flex items-center gap-2 text-white text-sm">
+          <i data-lucide="sliders" class="w-4 h-4 text-purple-400"></i> Suivi des réservations (Affluence temps réel)
         </h2>
         <button id="resetDataBtn" class="text-xs text-rose-400 hover:text-rose-300 underline">Réinitialiser les données</button>
       </div>
@@ -86,8 +104,193 @@
       </div>
     </div>
 
-    <!-- Section Réservation -->
-    <section id="bookingSection" class="space-y-8">
+    <!-- ============================================================ -->
+    <!-- SECTION 1 : PAGE D'ACCUEIL & CONNEXION (PAR DÉFAUT)           -->
+    <!-- ============================================================ -->
+    <section id="welcomeSection" class="max-w-xl mx-auto my-6 text-center space-y-8">
+      
+      <!-- Logo Visuel & Présentation -->
+      <div class="space-y-4">
+        <div class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-purple-400 p-0.5 shadow-2xl shadow-purple-600/40">
+          <div class="w-full h-full bg-zinc-950 rounded-[22px] flex items-center justify-center">
+            <svg class="w-12 h-12 text-purple-400 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+              <path d="m8 13 4-7 4 7"></path>
+              <path d="M9 17h6"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-3xl font-black text-white tracking-tight">Bienvenue sur <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300">GymFlow</span></h2>
+          <p class="text-xs text-zinc-400 mt-2 max-w-md mx-auto leading-relaxed">
+            Plateforme officielle de réservation des plateaux d'entraînement STAPS. Connecte-toi avec tes identifiants pour planifier tes séances et réguler l'affluence.
+          </p>
+        </div>
+      </div>
+
+      <!-- Carte de Connexion Adhérent -->
+      <div class="bg-zinc-950 border border-purple-900/50 rounded-3xl p-6 sm:p-8 shadow-2xl text-left relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <form id="loginForm" class="space-y-4 relative z-10">
+          <div>
+            <label class="block text-xs font-semibold text-purple-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="badge-check" class="w-4 h-4 text-purple-400"></i> N° d'Adhérent STAPS
+            </label>
+            <input 
+              type="text" 
+              id="loginMemberId" 
+              required 
+              placeholder="Ex : GF-2026-99" 
+              class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white uppercase font-mono tracking-wider focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition"
+            >
+            <p class="text-[11px] text-zinc-500 mt-1">Nouveau ? Saisis ton numéro désiré (ex: GF-01) pour créer ton profil.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-purple-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="mail" class="w-4 h-4 text-purple-400"></i> Adresse e-mail universitaire
+            </label>
+            <input 
+              type="email" 
+              id="loginEmail" 
+              required 
+              placeholder="alex.dupont@etu.univ-amu.fr" 
+              class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition"
+            >
+          </div>
+
+          <!-- Champs complémentaires (si nouvel adhérent) -->
+          <div id="newMemberFields" class="space-y-4 pt-2 border-t border-zinc-900 hidden">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Prénom</label>
+                <input type="text" id="loginFirstName" placeholder="Alex" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:border-purple-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Nom</label>
+                <input type="text" id="loginLastName" placeholder="Dupont" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:border-purple-500 outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Téléphone</label>
+              <input type="tel" id="loginPhone" placeholder="06 12 34 56 78" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:border-purple-500 outline-none">
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            id="loginSubmitBtn" 
+            class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2"
+          >
+            <span>Accéder à mon espace</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Badges caractéristiques -->
+      <div class="grid grid-cols-3 gap-3 text-center pt-2">
+        <div class="p-3 rounded-2xl bg-zinc-950 border border-zinc-900">
+          <div class="text-purple-400 font-bold text-base">20 max</div>
+          <div class="text-[10px] text-zinc-500">Par créneau</div>
+        </div>
+        <div class="p-3 rounded-2xl bg-zinc-950 border border-zinc-900">
+          <div class="text-purple-400 font-bold text-base">4 zones</div>
+          <div class="text-[10px] text-zinc-500">Spécialisées</div>
+        </div>
+        <div class="p-3 rounded-2xl bg-zinc-950 border border-zinc-900">
+          <div class="text-purple-400 font-bold text-base">Pass SVG</div>
+          <div class="text-[10px] text-zinc-500">Accès sans contact</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2 : ESPACE MON COMPTE & PROFIL ATHLÈTE                -->
+    <!-- ============================================================ -->
+    <section id="profileSection" class="hidden space-y-6">
+      
+      <!-- Fiche Adhérent Connecté -->
+      <div class="bg-zinc-950 border border-purple-900/50 rounded-3xl p-6 shadow-xl flex flex-wrap items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-purple-600/20 border border-purple-500/40 text-purple-300 flex items-center justify-center font-black text-2xl">
+            ⚡
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="profileFullName" class="text-xl font-black text-white">Alex Dupont</h2>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-950 text-purple-300 border border-purple-800">ACTIF</span>
+            </div>
+            <p id="profileSubInfo" class="text-xs text-zinc-400 font-mono mt-0.5">N° GF-2026-01 · alex.dupont@etu.univ-amu.fr</p>
+            <p id="profilePhone" class="text-xs text-zinc-500 mt-0.5">06 12 34 56 78</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="startBookingFromProfileBtn" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-2 shadow-lg shadow-purple-600/25">
+            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Réserver une séance
+          </button>
+          <button id="profileLogoutBtn" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-3 py-2.5 rounded-xl text-xs transition border border-zinc-800">
+            Déconnexion
+          </button>
+        </div>
+      </div>
+
+      <!-- Statistiques d'entraînement -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Séances à venir</span>
+            <span id="profileUpcomingCount" class="text-2xl font-black text-purple-400">0</span>
+          </div>
+          <div class="p-3 rounded-xl bg-purple-600/10 text-purple-400">
+            <i data-lucide="clock" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Séances effectuées</span>
+            <span id="profilePastCount" class="text-2xl font-black text-zinc-400">0</span>
+          </div>
+          <div class="p-3 rounded-xl bg-zinc-900 text-zinc-400">
+            <i data-lucide="history" class="w-6 h-6"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Listes détaillées des séances -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Créneaux à venir -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2 pb-2 border-b border-zinc-900">
+            <i data-lucide="calendar-check" class="w-4 h-4"></i> Prochaines séances programmées
+          </h3>
+          <div id="userUpcomingList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+            <!-- Rempli en JS -->
+          </div>
+        </div>
+
+        <!-- Créneaux passés -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-2 pb-2 border-b border-zinc-900">
+            <i data-lucide="history" class="w-4 h-4"></i> Historique des séances passées
+          </h3>
+          <div id="userPastList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+            <!-- Rempli en JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3 : PAGE DE RÉSERVATION                              -->
+    <!-- ============================================================ -->
+    <section id="bookingSection" class="hidden space-y-8">
       
       <!-- Étape 1 : Choix de la zone -->
       <div>
@@ -204,64 +407,35 @@
         </div>
       </div>
 
-      <!-- Récapitulatif des créneaux sélectionnés (Panier) -->
-      <div id="cartSection" class="hidden">
-        <div class="flex items-center justify-between mb-3">
+      <!-- Panier et Validation Directe en 1 Clic -->
+      <div id="cartSection" class="hidden bg-zinc-950 border border-purple-900/60 rounded-2xl p-5 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-zinc-900">
           <h3 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
-            <i data-lucide="calendar-check" class="w-4 h-4"></i> Créneaux réservés pour ta semaine (<span id="cartCount">0</span>)
+            <i data-lucide="calendar-check" class="w-4 h-4"></i> Créneaux sélectionnés (<span id="cartCount">0</span>)
           </h3>
           <button type="button" id="clearCartBtn" class="text-[11px] text-zinc-500 hover:text-rose-400 transition">Vider tout</button>
         </div>
+
         <div id="cartList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <!-- Créneaux ajoutés dynamiquement -->
         </div>
-      </div>
 
-      <!-- Étape 3 : Coordonnées Athlète & Confirmation Globale -->
-      <div>
-        <div class="flex items-center gap-2 mb-4">
-          <span class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-purple-600/50">3</span>
-          <h2 class="text-base font-bold uppercase tracking-wider text-white">Informations de l'athlète</h2>
+        <!-- Bouton de confirmation directe avec le compte connecté -->
+        <div class="pt-3 border-t border-zinc-900 flex flex-wrap items-center justify-between gap-4">
+          <div class="text-xs text-zinc-400">
+            Réservation au nom de : <span id="cartAthleteName" class="text-white font-semibold">Alex Dupont</span> (<span id="cartAthleteId" class="text-purple-300 font-mono">GF-01</span>)
+          </div>
+          <button type="button" id="confirmAllBookingsBtn" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-lg shadow-purple-600/30 flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i> Valider et générer mon pass
+          </button>
         </div>
-
-        <form id="athleteForm" class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-4 shadow-xl">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1">Prénom</label>
-              <input type="text" id="athleteFirstName" required placeholder="Alex" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1">Nom</label>
-              <input type="text" id="athleteLastName" required placeholder="Dupont" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-purple-300 mb-1">N° d'adhérent (ID)</label>
-              <input type="text" id="athleteId" required placeholder="GF-2026-99" class="w-full bg-black border border-purple-900/60 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none uppercase font-mono tracking-wider">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1">Adresse e-mail</label>
-              <input type="email" id="athleteEmail" required placeholder="alex.dupont@email.fr" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-zinc-400 mb-1">Téléphone</label>
-              <input type="tel" id="athletePhone" required placeholder="06 12 34 56 78" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white focus:border-purple-500 outline-none">
-            </div>
-          </div>
-
-          <div class="pt-4 border-t border-zinc-900 flex items-center justify-between">
-            <div id="bookingSummaryPreview" class="text-xs text-zinc-400">
-              Ajoute au moins un créneau pour valider.
-            </div>
-            <button type="submit" id="submitBtn" disabled class="bg-purple-600 disabled:bg-zinc-900 disabled:text-zinc-600 disabled:cursor-not-allowed hover:bg-purple-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-purple-600/25">
-              Valider toutes mes réservations
-            </button>
-          </div>
-        </form>
       </div>
 
     </section>
 
-    <!-- Écran de Confirmation / Pass d'accès QR Multi-séances -->
+    <!-- ============================================================ -->
+    <!-- SECTION 4 : CONFIRMATION & PASS QR                           -->
+    <!-- ============================================================ -->
     <section id="confirmationSection" class="hidden max-w-lg mx-auto my-8 bg-zinc-950 border border-purple-900/60 rounded-3xl p-6 shadow-2xl text-center space-y-6">
       <div class="w-14 h-14 bg-purple-600/20 border border-purple-500/40 text-purple-400 rounded-2xl mx-auto flex items-center justify-center">
         <i data-lucide="check" class="w-8 h-8"></i>
@@ -297,84 +471,19 @@
         </div>
       </div>
 
-      <button id="newBookingBtn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-2.5 rounded-xl text-xs transition border border-zinc-800">
-        Faire d'autres réservations
-      </button>
-    </section>
-
-    <!-- Écran Profil & Historique Athlète -->
-    <section id="profileSection" class="hidden space-y-6">
-      <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 shadow-xl flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i data-lucide="user-check" class="w-5 h-5 text-purple-400"></i> Espace Adhérent GymFlow
-          </h2>
-          <p class="text-xs text-zinc-400 mt-1">Consulte tes réservations à venir et passées.</p>
-        </div>
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <input 
-            type="text" 
-            id="searchMemberInput" 
-            placeholder="N° Adhérent ou E-mail..." 
-            class="bg-black border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:border-purple-500 outline-none w-full sm:w-64"
-          >
-          <button id="searchMemberBtn" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">
-            Consulter
-          </button>
-        </div>
-      </div>
-
-      <!-- Détails de l'athlète trouvé -->
-      <div id="profileDetails" class="hidden space-y-6">
-        <div class="bg-zinc-950 border border-purple-900/40 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold text-lg">
-              🏋️
-            </div>
-            <div>
-              <h3 id="profileName" class="text-base font-bold text-white">Prénom Nom</h3>
-              <p id="profileMemberInfo" class="text-xs text-zinc-400 font-mono">N° GF-XXXX | email@mail.fr</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-4 text-xs">
-            <div class="text-center px-3 py-1.5 bg-black rounded-lg border border-zinc-800">
-              <span class="block text-zinc-500 text-[10px] uppercase">À venir</span>
-              <span id="countUpcoming" class="font-bold text-purple-400 text-sm">0</span>
-            </div>
-            <div class="text-center px-3 py-1.5 bg-black rounded-lg border border-zinc-800">
-              <span class="block text-zinc-500 text-[10px] uppercase">Passées</span>
-              <span id="countPast" class="font-bold text-zinc-400 text-sm">0</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Créneaux à venir -->
-          <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
-              <i data-lucide="clock" class="w-4 h-4"></i> Séances à venir
-            </h4>
-            <div id="upcomingBookingsList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
-              <!-- Rempli en JS -->
-            </div>
-          </div>
-
-          <!-- Créneaux passés -->
-          <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-2">
-              <i data-lucide="history" class="w-4 h-4"></i> Séances passées (Historique)
-            </h4>
-            <div id="pastBookingsList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
-              <!-- Rempli en JS -->
-            </div>
-          </div>
-        </div>
+      <div class="flex gap-2">
+        <button id="viewProfileAfterBookingBtn" class="w-1/2 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2.5 rounded-xl text-xs transition">
+          Voir mon compte
+        </button>
+        <button id="newBookingBtn" class="w-1/2 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-2.5 rounded-xl text-xs transition border border-zinc-800">
+          Autre séance
+        </button>
       </div>
     </section>
 
   </main>
 
-  <!-- Modale d'authentification Superviseur (Mot de passe) -->
+  <!-- Modale d'authentification Superviseur (0129#) -->
   <div id="adminPasswordModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-zinc-950 border border-purple-900/60 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
       <div class="flex items-center gap-3 mb-4">
@@ -435,33 +544,211 @@
 
     let pendingSlots = [];
     let reservations = JSON.parse(localStorage.getItem('gym_reservations_v2')) || [];
+    let members = JSON.parse(localStorage.getItem('gym_members_v2')) || [
+      { memberId: 'GF-2026-01', email: 'alex.dupont@etu.univ-amu.fr', firstName: 'Alex', lastName: 'Dupont', phone: '06 12 34 56 78' }
+    ];
+    let currentAthlete = JSON.parse(localStorage.getItem('gym_current_athlete')) || null;
 
     const dateInput = document.getElementById('bookingDate');
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
     dateInput.min = today;
 
-    // Navigation entre pages (Réservation vs Compte)
-    const bookingSection = document.getElementById('bookingSection');
+    // Sections
+    const welcomeSection = document.getElementById('welcomeSection');
     const profileSection = document.getElementById('profileSection');
+    const bookingSection = document.getElementById('bookingSection');
     const confirmationSection = document.getElementById('confirmationSection');
+
+    // Boutons navigation
+    const navLogoBtn = document.getElementById('navLogoBtn');
     const navBookingBtn = document.getElementById('navBookingBtn');
     const navProfileBtn = document.getElementById('navProfileBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userBadge = document.getElementById('userBadge');
+    const navUserName = document.getElementById('navUserName');
 
-    navBookingBtn.addEventListener('click', () => {
-      bookingSection.classList.remove('hidden');
+    function switchView(viewName) {
+      welcomeSection.classList.add('hidden');
       profileSection.classList.add('hidden');
-      confirmationSection.classList.add('hidden');
-      renderSlots();
-    });
-
-    navProfileBtn.addEventListener('click', () => {
       bookingSection.classList.add('hidden');
-      profileSection.classList.remove('hidden');
       confirmationSection.classList.add('hidden');
+
+      if (viewName === 'welcome') {
+        welcomeSection.classList.remove('hidden');
+      } else if (viewName === 'profile') {
+        profileSection.classList.remove('hidden');
+        renderProfileView();
+      } else if (viewName === 'booking') {
+        bookingSection.classList.remove('hidden');
+        renderSlots();
+        updateAthleteBookingHeader();
+      } else if (viewName === 'confirmation') {
+        confirmationSection.classList.remove('hidden');
+      }
       lucide.createIcons();
+    }
+
+    function updateAuthUI() {
+      if (currentAthlete) {
+        navBookingBtn.classList.remove('hidden');
+        navBookingBtn.classList.add('flex');
+        navProfileBtn.classList.remove('hidden');
+        navProfileBtn.classList.add('flex');
+        logoutBtn.classList.remove('hidden');
+        userBadge.classList.remove('hidden');
+        userBadge.classList.add('flex');
+        navUserName.textContent = `${currentAthlete.firstName} ${currentAthlete.lastName.charAt(0)}.`;
+      } else {
+        navBookingBtn.classList.add('hidden');
+        navProfileBtn.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
+        userBadge.classList.add('hidden');
+      }
+    }
+
+    navLogoBtn.addEventListener('click', () => {
+      if (currentAthlete) switchView('profile');
+      else switchView('welcome');
+    });
+    navBookingBtn.addEventListener('click', () => switchView('booking'));
+    navProfileBtn.addEventListener('click', () => switchView('profile'));
+    document.getElementById('startBookingFromProfileBtn').addEventListener('click', () => switchView('booking'));
+    document.getElementById('viewProfileAfterBookingBtn').addEventListener('click', () => switchView('profile'));
+
+    function handleLogout() {
+      currentAthlete = null;
+      localStorage.removeItem('gym_current_athlete');
+      updateAuthUI();
+      switchView('welcome');
+    }
+    logoutBtn.addEventListener('click', handleLogout);
+    document.getElementById('profileLogoutBtn').addEventListener('click', handleLogout);
+
+    // Formulaire d'authentification / inscription
+    const loginForm = document.getElementById('loginForm');
+    const loginMemberId = document.getElementById('loginMemberId');
+    const loginEmail = document.getElementById('loginEmail');
+    const newMemberFields = document.getElementById('newMemberFields');
+
+    loginMemberId.addEventListener('input', checkExistingMember);
+    loginEmail.addEventListener('input', checkExistingMember);
+
+    function checkExistingMember() {
+      const id = loginMemberId.value.trim().toUpperCase();
+      const mail = loginEmail.value.trim().toLowerCase();
+      const exists = members.find(m => m.memberId === id || m.email === mail);
+
+      if (!exists && (id.length >= 3 || mail.length >= 5)) {
+        newMemberFields.classList.remove('hidden');
+        document.getElementById('loginFirstName').required = true;
+        document.getElementById('loginLastName').required = true;
+      } else {
+        newMemberFields.classList.add('hidden');
+        document.getElementById('loginFirstName').required = false;
+        document.getElementById('loginLastName').required = false;
+      }
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const memId = loginMemberId.value.trim().toUpperCase();
+      const email = loginEmail.value.trim().toLowerCase();
+
+      let athlete = members.find(m => m.memberId === memId || m.email === email);
+
+      if (!athlete) {
+        // Création du profil si nouveau
+        athlete = {
+          memberId: memId,
+          email: email,
+          firstName: document.getElementById('loginFirstName').value.trim() || 'Athlète',
+          lastName: document.getElementById('loginLastName').value.trim() || 'GymFlow',
+          phone: document.getElementById('loginPhone').value.trim() || '06 00 00 00 00'
+        };
+        members.push(athlete);
+        localStorage.setItem('gym_members_v2', JSON.stringify(members));
+      }
+
+      currentAthlete = athlete;
+      localStorage.setItem('gym_current_athlete', JSON.stringify(currentAthlete));
+      updateAuthUI();
+      switchView('profile');
     });
 
+    // Rendu Espace Adhérent
+    function renderProfileView() {
+      if (!currentAthlete) return;
+
+      document.getElementById('profileFullName').textContent = `${currentAthlete.firstName} ${currentAthlete.lastName}`;
+      document.getElementById('profileSubInfo').textContent = `N° ${currentAthlete.memberId} · ${currentAthlete.email}`;
+      document.getElementById('profilePhone').textContent = currentAthlete.phone || 'Non renseigné';
+
+      const userReservations = reservations.filter(r => 
+        (r.memberId && r.memberId.toLowerCase() === currentAthlete.memberId.toLowerCase()) || 
+        (r.email && r.email.toLowerCase() === currentAthlete.email.toLowerCase())
+      );
+
+      const now = new Date();
+      const upcomingList = document.getElementById('userUpcomingList');
+      const pastList = document.getElementById('userPastList');
+
+      upcomingList.innerHTML = '';
+      pastList.innerHTML = '';
+
+      let upcomingCount = 0;
+      let pastCount = 0;
+
+      userReservations.sort((a, b) => new Date(`${a.date}T${a.startTime}`) - new Date(`${b.date}T${b.startTime}`));
+
+      userReservations.forEach(r => {
+        const slotEndDateTime = new Date(`${r.date}T${r.endTime}`);
+        const isUpcoming = slotEndDateTime >= now;
+
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-xl border border-zinc-900 bg-black flex items-center justify-between text-xs';
+        card.innerHTML = `
+          <div>
+            <div class="font-bold text-white flex items-center gap-1.5">
+              <span>${r.zoneName}</span>
+              <span class="text-[10px] text-purple-400 font-mono">#${r.ref}</span>
+            </div>
+            <div class="text-zinc-400 mt-0.5">${r.dateFormatted} (${r.startTime} - ${r.endTime})</div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] ${isUpcoming ? 'bg-purple-950 text-purple-300 border border-purple-800' : 'bg-zinc-900 text-zinc-500'}">
+            ${isUpcoming ? 'À venir' : 'Effectué'}
+          </span>
+        `;
+
+        if (isUpcoming) {
+          upcomingList.appendChild(card);
+          upcomingCount++;
+        } else {
+          pastList.appendChild(card);
+          pastCount++;
+        }
+      });
+
+      if (upcomingCount === 0) {
+        upcomingList.innerHTML = '<p class="text-xs text-zinc-600 py-4 text-center">Aucune séance à venir.</p>';
+      }
+      if (pastCount === 0) {
+        pastList.innerHTML = '<p class="text-xs text-zinc-600 py-4 text-center">Aucun historique disponible.</p>';
+      }
+
+      document.getElementById('profileUpcomingCount').textContent = upcomingCount;
+      document.getElementById('profilePastCount').textContent = pastCount;
+      lucide.createIcons();
+    }
+
+    function updateAthleteBookingHeader() {
+      if (currentAthlete) {
+        document.getElementById('cartAthleteName').textContent = `${currentAthlete.firstName} ${currentAthlete.lastName}`;
+        document.getElementById('cartAthleteId').textContent = currentAthlete.memberId;
+      }
+    }
+
+    // Gestion des créneaux
     function generateSlotTimes() {
       const times = [];
       const endMax = 23 * 60;
@@ -522,7 +809,6 @@
               : 'bg-black border-zinc-800 text-zinc-300 hover:border-purple-600/50'
         }`;
 
-        // Jauge et couleur du texte
         const barColor = isFull ? 'bg-rose-500' : fillPercent > 70 ? 'bg-amber-400' : 'bg-purple-500';
         const labelText = isFull ? 'Complet (0 place)' : `${remaining} place${remaining > 1 ? 's' : ''} rest.`;
 
@@ -533,7 +819,6 @@
               ${labelText}
             </div>
           </div>
-          <!-- Jauge visuelle de remplissage -->
           <div class="w-full bg-zinc-900 rounded-full h-1 mt-2 overflow-hidden border border-zinc-800/80">
             <div class="${barColor} h-full transition-all duration-300" style="width: ${fillPercent}%"></div>
           </div>
@@ -626,7 +911,6 @@
       renderCart();
       renderSlots();
       updateTempSlotPreview();
-      updateFinalSummary();
     });
 
     function renderCart() {
@@ -645,7 +929,7 @@
 
       pendingSlots.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'bg-zinc-950 border border-purple-900/60 rounded-xl p-3 flex items-center justify-between text-xs';
+        div.className = 'bg-black border border-purple-900/60 rounded-xl p-3 flex items-center justify-between text-xs';
         div.innerHTML = `
           <div>
             <div class="font-bold text-white">${item.zoneName}</div>
@@ -659,6 +943,7 @@
         cartList.appendChild(div);
       });
 
+      updateAthleteBookingHeader();
       lucide.createIcons();
     }
 
@@ -666,28 +951,13 @@
       pendingSlots = pendingSlots.filter(s => s.id !== id);
       renderCart();
       renderSlots();
-      updateFinalSummary();
     };
 
     document.getElementById('clearCartBtn').addEventListener('click', () => {
       pendingSlots = [];
       renderCart();
       renderSlots();
-      updateFinalSummary();
     });
-
-    function updateFinalSummary() {
-      const summary = document.getElementById('bookingSummaryPreview');
-      const submitBtn = document.getElementById('submitBtn');
-
-      if (pendingSlots.length > 0) {
-        summary.innerHTML = `<span class="text-purple-400 font-bold">${pendingSlots.length} créneau(x)</span> prêt(s) à être validé(s).`;
-        submitBtn.removeAttribute('disabled');
-      } else {
-        summary.textContent = 'Ajoute au moins un créneau ci-dessus pour valider.';
-        submitBtn.setAttribute('disabled', 'true');
-      }
-    }
 
     // Générateur autonome de QR Code Vectoriel SVG
     function drawDirectSVGQRCode(targetElement, codeText) {
@@ -732,35 +1002,28 @@
       `;
     }
 
-    // Soumission du formulaire
-    document.getElementById('athleteForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (pendingSlots.length === 0) return;
+    // Validation des réservations en 1 Clic avec le compte connecté
+    document.getElementById('confirmAllBookingsBtn').addEventListener('click', () => {
+      if (pendingSlots.length === 0 || !currentAthlete) return;
 
       const refNumber = 'PULSE-' + Math.floor(1000 + Math.random() * 9000);
-      const athleteInfo = {
-        firstName: document.getElementById('athleteFirstName').value.trim(),
-        lastName: document.getElementById('athleteLastName').value.trim(),
-        memberId: document.getElementById('athleteId').value.trim().toUpperCase(),
-        email: document.getElementById('athleteEmail').value.trim().toLowerCase(),
-        phone: document.getElementById('athletePhone').value.trim()
-      };
 
       pendingSlots.forEach(slot => {
         reservations.push({
           ref: refNumber,
-          ...athleteInfo,
+          firstName: currentAthlete.firstName,
+          lastName: currentAthlete.lastName,
+          memberId: currentAthlete.memberId,
+          email: currentAthlete.email,
+          phone: currentAthlete.phone,
           ...slot
         });
       });
 
       localStorage.setItem('gym_reservations_v2', JSON.stringify(reservations));
 
-      bookingSection.classList.add('hidden');
-      confirmationSection.classList.remove('hidden');
-
-      document.getElementById('ticketAthlete').textContent = `${athleteInfo.firstName} ${athleteInfo.lastName}`;
-      document.getElementById('ticketMemberId').textContent = athleteInfo.memberId;
+      document.getElementById('ticketAthlete').textContent = `${currentAthlete.firstName} ${currentAthlete.lastName}`;
+      document.getElementById('ticketMemberId').textContent = currentAthlete.memberId;
       document.getElementById('ticketRef').textContent = `#${refNumber}`;
 
       const ticketList = document.getElementById('ticketBookingsList');
@@ -775,110 +1038,21 @@
         ticketList.appendChild(item);
       });
 
-      // Dessine le QR Code avec le N° adhérent
       const qrWrapper = document.getElementById('qrcodeWrapper');
-      drawDirectSVGQRCode(qrWrapper, `${refNumber}-${athleteInfo.memberId}`);
+      drawDirectSVGQRCode(qrWrapper, `${refNumber}-${currentAthlete.memberId}`);
 
+      pendingSlots = [];
+      renderCart();
       updateAdminTable();
-      lucide.createIcons();
+      switchView('confirmation');
     });
 
     document.getElementById('newBookingBtn').addEventListener('click', () => {
-      confirmationSection.classList.add('hidden');
-      bookingSection.classList.remove('hidden');
-      document.getElementById('athleteForm').reset();
-      pendingSlots = [];
       selectedSlot = null;
-      renderCart();
-      renderSlots();
-      updateFinalSummary();
+      switchView('booking');
     });
 
-    // --- Module Profil & Historique Athlète ---
-    const searchMemberInput = document.getElementById('searchMemberInput');
-    const searchMemberBtn = document.getElementById('searchMemberBtn');
-    const profileDetails = document.getElementById('profileDetails');
-
-    function searchAthleteHistory() {
-      const query = searchMemberInput.value.trim().toLowerCase();
-      if (!query) return;
-
-      const userReservations = reservations.filter(r => 
-        (r.memberId && r.memberId.toLowerCase() === query) || 
-        (r.email && r.email.toLowerCase() === query)
-      );
-
-      if (userReservations.length === 0) {
-        alert("Aucune réservation trouvée pour cet adhérent.");
-        profileDetails.classList.add('hidden');
-        return;
-      }
-
-      const firstRecord = userReservations[0];
-      document.getElementById('profileName').textContent = `${firstRecord.firstName} ${firstRecord.lastName}`;
-      document.getElementById('profileMemberInfo').textContent = `N° ${firstRecord.memberId} | ${firstRecord.email}`;
-
-      const now = new Date();
-      const upcomingList = document.getElementById('upcomingBookingsList');
-      const pastList = document.getElementById('pastBookingsList');
-
-      upcomingList.innerHTML = '';
-      pastList.innerHTML = '';
-
-      let upcomingCount = 0;
-      let pastCount = 0;
-
-      // Trier par date/heure
-      userReservations.sort((a, b) => new Date(`${a.date}T${a.startTime}`) - new Date(`${b.date}T${b.startTime}`));
-
-      userReservations.forEach(r => {
-        const slotEndDateTime = new Date(`${r.date}T${r.endTime}`);
-        const isUpcoming = slotEndDateTime >= now;
-
-        const card = document.createElement('div');
-        card.className = 'p-3 rounded-xl border border-zinc-900 bg-black flex items-center justify-between text-xs';
-        card.innerHTML = `
-          <div>
-            <div class="font-bold text-white flex items-center gap-1.5">
-              <span>${r.zoneName}</span>
-              <span class="text-[10px] text-purple-400 font-mono">#${r.ref}</span>
-            </div>
-            <div class="text-zinc-400 mt-0.5">${r.dateFormatted} (${r.startTime} - ${r.endTime})</div>
-          </div>
-          <span class="px-2 py-0.5 rounded text-[10px] ${isUpcoming ? 'bg-purple-950 text-purple-300 border border-purple-800' : 'bg-zinc-900 text-zinc-500'}">
-            ${isUpcoming ? 'À venir' : 'Effectué'}
-          </span>
-        `;
-
-        if (isUpcoming) {
-          upcomingList.appendChild(card);
-          upcomingCount++;
-        } else {
-          pastList.appendChild(card);
-          pastCount++;
-        }
-      });
-
-      if (upcomingCount === 0) {
-        upcomingList.innerHTML = '<p class="text-xs text-zinc-600 py-3 text-center">Aucun créneau programmé.</p>';
-      }
-      if (pastCount === 0) {
-        pastList.innerHTML = '<p class="text-xs text-zinc-600 py-3 text-center">Aucune séance passée.</p>';
-      }
-
-      document.getElementById('countUpcoming').textContent = upcomingCount;
-      document.getElementById('countPast').textContent = pastCount;
-
-      profileDetails.classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    searchMemberBtn.addEventListener('click', searchAthleteHistory);
-    searchMemberInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchAthleteHistory();
-    });
-
-    // --- Gestion Authentification Superviseur (0129#) ---
+    // --- Superviseur (Code : 0129#) ---
     const SUPERVISOR_PIN = "0129#";
     const toggleAdminBtn = document.getElementById('toggleAdminBtn');
     const adminPanel = document.getElementById('adminPanel');
@@ -945,13 +1119,17 @@
         localStorage.removeItem('gym_reservations_v2');
         updateAdminTable();
         renderSlots();
-        if (!profileDetails.classList.contains('hidden')) {
-          searchAthleteHistory();
-        }
+        if (currentAthlete) renderProfileView();
       }
     });
 
-    renderSlots();
+    // Initialisation
+    updateAuthUI();
+    if (currentAthlete) {
+      switchView('profile');
+    } else {
+      switchView('welcome');
+    }
     updateAdminTable();
     lucide.createIcons();
   </script>
