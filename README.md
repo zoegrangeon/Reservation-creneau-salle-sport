@@ -1,73 +1,41 @@
 # GymFlow — Réservation de créneaux en salle de sport
 
-Interface web interactive de gestion des flux et de réservation de créneaux d'entraînement, développée dans le cadre de l'unité d'enseignement du Mastère spécialisé ingénierie du sport **IHME** (Polytech Marseille).
+Interface web interactive de gestion des flux d'entraînement et de régulation des accès en salle de sport, conçue dans le cadre du cours **IHME** (Polytech Marseille).
+
+- **URL de l'application en ligne** : `https://node219697-ihme26.jcloud.ik-server.com/reservation-de-creneaux-de-salle-de-sport/`
+- **Conteneur & Registre** : `ghcr.io/zoegrangeon/reservation-creneau-salle-sport`
 
 ---
 
-## 🎯 Concept & Objectifs
+## 1. Cadrage du besoin
 
-**GymFlow** répond à une problématique centrale d'ergonomie et d'organisation des espaces sportifs : **lisser l'affluence et réguler l'accès aux équipements** pour garantir des conditions d'entraînement optimales et sécurisées.
+### Utilisateur cible
+Étudiant(e) ou enseignant(e) de la filière STAPS / sportif régulier en salle universitaire s'entraînant sur des créneaux précis (cardio, force, préparation type Hyrox) nécessitant une disponibilité garantie des postes d'entraînement.
 
-L'application permet aux adhérents de :
-- Consulter en temps réel la disponibilité des zones d'entraînement.
-- Réserver des créneaux de durée flexible avec mise à jour immédiate des jauges de fréquentation.
-- Générer un pass d'accès numérique individuel muni d'un QR code vectoriel autonome.
-- Donner au superviseur de la salle une vue globale sur l'affluence et la possibilité de réinitialiser les compteurs.
+### Problème rencontré
+Saturation imprévisible des plateaux sportifs aux heures de pointe, files d'attente sur les machines à charge guidée/libre, et absence de visibilité sur les créneaux disponibles.
 
----
-
-## ⚙️ Fonctionnalités clés
-
-### 1. Gestion par espaces spécialisés
-La salle est structurée en 4 zones distinctes, chacune limitée à une capacité stricte de **20 places maximum** par créneau :
-- **Espace cardio** : tapis de course, rameurs, vélos de biking.
-- **Espace HYROX** : zones fonctionnelles, SkiErgs, traîneaux et stations d'endurance.
-- *$Espace jambe** : racks à squat, presses, postes de charge guidée et libre.
-- **Espace haut du corps** : bancs développés, poulies réglables, haltères et postes de tirage.
-
-### 2. Planification horaire et durée modulable
-- **Amplitude horaire** : de 6h00 à 23h00, découpée par tranches de 30 minutes.
-- **Format flexible** : sélection de sessions de 1h, 1h30 ou 2h selon le volume de la séance.
-- **Jauges visuelles** : code couleur dynamique (vert, ambre, rouge) indiquant le niveau de saturation du créneau.
-
-### 3. Panier multi-créneaux
-- Sélection fluide de plusieurs sessions sur différents jours de la semaine sans rechargement de page.
-- Validation groupée des réservations avec persistance locale des données (`localStorage`).
-
-### 4. Pass d'accès avec QR code autonome
-- Génération instantanée d'un récapitulatif nominatif prêt pour le contrôle d'accès.
-- Intégration d'un module de QR code vectoriel natif (SVG), fonctionnant sans aucune dépendance externe ni appel à une API tierce.
-
-### 5. Console superviseur (Admin)
-- Tableau de bord synthétique affichant le taux d'occupation des espaces en temps réel.
-- Commande d'effacement rapide pour réinitialiser le registre des réservations lors des phases de test ou à l'ouverture quotidienne.
+### Entrées & Résultat attendu
+- **Entrée** : Sélection d'une zone sportive, d'une date, d'un horaire (tranches de 30 min entre 6h et 23h), d'une durée (1h, 1h30, 2h) et des coordonnées athlète (Nom, Prénom, N° Adhérent, Email, Téléphone).
+- **Résultat attendu** : Contrôle immédiat de la capacité (jauge visuelle), confirmation groupée, génération d'un pass avec QR code vectoriel SVG autonome et intégration dans l'historique du compte athlète.
 
 ---
 
-## 🎨 Design & Ergonomie
+## 2. Modèle de données & Schéma SQL
 
-L'interface a été conçue pour offrir une lisibilité optimale sur smartphone et poste fixe :
-- **Thème sombre immersif** : fond noir profond (`#050505` / `#0f0f13`) limitant la fatigue visuelle.
-- **Accents violet électrique** : mise en valeur des actions prioritaires, des états actifs et des boutons de validation.
-- **Feedback visuel immédiat** : micro-animations au survol et retour d'état instantané lors de l'ajout au panier.
+Le modèle relationnel s'appuie sur trois entités principales (détaillées dans le fichier `schema.sql`) :
+- `spaces` : Espaces d'entraînement (`id`, `name`, `max_capacity` fixé à 20).
+- `members` : Adhérents (`member_id` [PK], `first_name`, `last_name`, `email`, `phone`).
+- `reservations` : Réservations confirmées (`id` [PK], `booking_ref`, `member_id` [FK], `space_id` [FK], `booking_date`, `start_time`, `end_time`, `duration_minutes`).
 
----
-
-## 🛠️ Stack technique
-
-- **Structure & Interface** : HTML5 sémantique, Tailwind CSS (via CDN) pour le stylage utilitaire.
-- **Logique applicative** : JavaScript moderne (ES6+), manipulation du DOM, gestion synchrone du `localStorage`.
-- **Rendu graphique** : icônes Lucide Icons, générateur vectoriel de QR Code embarqué.
-- **Environnement de conteneurisation** : Node.js slim (port 3000), exposition d'un point d'accès de contrôle `/api/health`.
-- **CI/CD & Déploiement** : GitHub Actions (`publish.yml`), registre de conteneurs GitHub Packages (GHCR) et hébergement sur l'infrastructure du cours IHME.
-
----
-
-## 🚀 Déploiement & Maintenance
-
-### Mettre à jour l'application en production
-1. Modifier le code localement (ou sur GitHub Codespaces) et valider les changements :
-   ```bash
-   git add .
-   git commit -m "feat: description de la mise a jour"
-   git push
+Exemple de requête SQL de calcul de disponibilité :
+```sql
+SELECT 
+    s.name, 
+    GREATEST(0, s.max_capacity - COUNT(r.id)) AS places_restantes
+FROM spaces s
+LEFT JOIN reservations r ON s.id = r.space_id 
+    AND r.booking_date = CURRENT_DATE 
+    AND r.start_time = '10:00:00'
+WHERE s.id = 'hyrox'
+GROUP BY s.name, s.max_capacity;
